@@ -4,7 +4,7 @@ Prend en argument un objet de Socket_client et en utilise les méthodes
 ainsi que l'adresse du serveur
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-from Socket_client import *
+from socket_client.Socket_client import Socket_client
 
 class Client:
 

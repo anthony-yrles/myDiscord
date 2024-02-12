@@ -5,8 +5,8 @@ ainsi que l'adresse du server et une liste des clients
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 import threading
-from Socket_server import *
-from Db import *
+from socket_server.Socket_server import Socket_server
+from socket_server.Db import Db
 
 class Server:
 
@@ -36,8 +36,8 @@ class Server:
     Pendant ce temps la méthode start_listening peut continuer à gérer les nouveaux clients
     """
 
-    def __init__(self, server_address):
-        self.db = Db()
+    def __init__(self, server_address, host, user, password, database):
+        self.db = Db(host, user, password, database)
         self.socket_server = Socket_server()
         self.server_address = server_address
         self.clients = []

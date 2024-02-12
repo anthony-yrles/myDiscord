@@ -4,7 +4,7 @@ comme base pour créer des servers spécifique dans l'application
 Enfant de la class Socket donc reçoit toutes les méthides dont send et receive
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-from Socket import *
+from Socket import Socket
 
 class Socket_server(Socket):
     """
