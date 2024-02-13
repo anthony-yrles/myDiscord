@@ -8,23 +8,28 @@ from socket_client.Socket_client import Socket_client
 
 class Client:
     """
-    Classe Client qui simplifie les interactions avec le serveur côté client.
-    Prend en argument un objet de Socket_client et en utilise les méthodes ainsi que l'adresse du serveur.
+    Méthodes utilisé:
+
+    connect_to_server: Permet de conencter le client au server
+
+    send_data: Permet d'envoyer des informations au server
+
+    receive_data: Permet de recevoir des informations
+
+    close: Ferme la connection au server
     """
 
-    def __init__(self, server_address):
-        self.socket_client = Socket_client()
-        self.server_address = server_address
+    def __init__(self):
+        self.client_socket = Socket_client()
 
-    def connect(self):
-        self.socket_client.connect(self.server_address)
+    def connect_to_server(self, address, port):
+        self.client_socket.connect_to_server(address, port)
 
     def send_data(self, data):
-        data_bytes = data.encode()
-        self.socket_client.send(data_bytes)
+        self.client_socket.send(data)
 
-    def receive_data(self, buffer_size=1024):
-        return self.socket_client.receive(buffer_size)
+    def receive_data(self, buffer_size):
+        return self.client_socket.receive(buffer_size)
 
-    def close_connection(self):
-        self.socket_client.close()
+    def close(self):
+        self.client_socket.close()

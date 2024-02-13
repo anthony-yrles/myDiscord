@@ -10,12 +10,12 @@ class Socket_client(Socket):
     """
     Méthode utilisé:
 
-    connect: Permet la connection avec un serveur à une adresse spécifique. 
-    L'argument adresse est un tupple adresse IP du serveur + Port
+    connect_to_server: Permet la connection avec un serveur à une adresse spécifique.
     """
 
-    def connect(self, address):
-        self.socks.connect(address)
+    def __init__(self):
+        super().__init__()
 
-    def send(self, data):
-        self.socks.send(data)
+    def connect_to_server(self, address, port):
+        self.connect(address, port)
+        print(f"Connected to server at {address}:{port}")

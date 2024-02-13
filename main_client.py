@@ -12,11 +12,7 @@ client est une instance de Client qui prend en paramètre server_address.
 
 """
 
-server_address = ('127.0.0.1', 1023)
-
-client = Client(server_address)
-client.connect()
-client.send_data("Bonjour serveur!")
-response = client.receive_data()
-print("Réponse du serveur:", response)
-client.close_connection()
+client = Client()
+client.connect_to_server('127.0.0.1', 8080)
+client.send_data("Hello, Server!")
+client.close()
