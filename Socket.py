@@ -2,7 +2,7 @@
 Class Socket permettant de lier la partie serveur et la partie client
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-import socket
+import socket as sk
 
 class Socket:
 
@@ -29,19 +29,19 @@ class Socket:
     """
 
     def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socks= sk.socket(sk.AF_INET, sk.SOCK_STREAM)
 
     def bind(self, address):
-        self.socket.bind(address)
+        self.socks.bind(address)
 
     def listen(self, backlog):
-        self.socket.listen(backlog)
+        self.socks.listen(backlog)
 
     def accept(self):
-        return self.socket.accept()
+        return self.socks.accept()
 
     def close(self):
-        self.socket.close()
+        self.socks.close()
 
     def send(self, connection, data):
         connection.sendall(data.encode())

@@ -67,11 +67,12 @@ class Server:
             data = self.receive_data(client_socket)
             if not data:
                 self.close_connection(client_socket)
+                
                 break
             self.send_data_to_all_clients(data)
 
     def start_listening(self):
         while True:
             client_socket, client_address = self.accept_connection()
-            client_thread = threading.Thread(target=self.handle_client, args=(client_socket, client_address))
+            client_thread = threading.Thread(target=self.handle_client, args=(client_socket))
             client_thread.start()

@@ -15,4 +15,7 @@ class Socket_client(Socket):
     """
 
     def connect(self, address):
-        self.socket.connect(address)
+        self.socks.connect(address)
+
+    def send(self, data):
+        self.socks.send(data)
