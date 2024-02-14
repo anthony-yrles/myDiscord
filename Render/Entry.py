@@ -20,3 +20,6 @@ class CustomEntry:
             self.entry.delete(0, tk.END)
             self.entry.config(fg='white') 
 
+    def get_value(self):
+        return self.entry.get()
+
