@@ -4,7 +4,6 @@ Prend en argument un objet de Socket_server et en utilise les méthodes
 ainsi que l'adresse du server et une liste des clients
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-import threading
 from socket_server.Socket_server import Socket_server
 from socket_server.Db import Db
 
@@ -22,6 +21,9 @@ class Server:
         self.db = Db(host, user, password, database)
         self.server_socket = Socket_server()
         self.server_socket.start(address, port, backlog)
+        self.query_dictionnary = {
+            'READ_TABLE_USER' : self.read_table_user
+            }
 
     def accept_client(self):
         return self.server_socket.accept_connection()
@@ -29,11 +31,18 @@ class Server:
     def close(self):
         self.server_socket.close()
 
-    # def handle_client(self, client_socket):
-    #     while True:
-    #         data = self.receive_data(client_socket)
-    #         if not data:
-    #             self.close_connection(client_socket)
+    def read_table_user(self):
+        query = f'SELECT * FROM user'
+        return self.db.fetch(query, params=None)
+    
+    def handle_client_request(self):
+        client_data_received = self.receive_data(1024)
+        if client_data_received in self.query_dictionnary:
+            result = self.query_dictionnary[client_data_received]()
+            self.send_data(result)
+        else:
+            self.send_data("Command not recognized")
+
                 
     #             break
     #         self.send_data_to_all_clients(data)
