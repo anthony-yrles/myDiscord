@@ -5,14 +5,14 @@ class Authentication:
         self.client = client
         self.user_list = []
 
-    def authenticate(self, email, password):
+    def authenticate(self, mail, password):
         self.client.send_data('READ_TABLE_USER')
         user_data_json = self.client.receive_data(1024)
         user_data = json.loads(user_data_json)
         if 'email' in user_data and 'password' in user_data:
-            if user_data['email'] == email and user_data['password'] == password:
+            if user_data['email'] == mail and user_data['password'] == password:
                 if user_data['name'] not in self.user_list:
-                    user_data['name'] = User(user_data['name'], user_data['prenom'], user_data['email'], user_data['password'], user_data['list_room_private'], user_data['list_room_group'], user_data['list_create_room'])
+                    user_data['name'] = User(user_data['name'], user_data['prenom'], user_data['mail'], user_data['password'], user_data['list_room_private'], user_data['list_room_group'], user_data['list_create_room'])
                     self.user_list.append(user_data['name'])
                     return user_data['name']
         return False
