@@ -11,12 +11,12 @@ host, user, password et database sont les informations nécessaires pour se conn
 server est une instance de Server qui prend en paramètre server_address, host, user, password et database.
 """
 
-host = "127.0.0.1"
+host = "10.10.74.165"
 user = "root"
 password = "rootequipe7+"  
 database = "mydiscord"
 
-server = Server('127.0.0.1', 8080, 5, host, user, password, database)
+server = Server('10.10.74.165', 8080, 5, host, user, password, database)
 client_socket, client_address = server.accept_client()
 data_received = client_socket.recv(1024)
 print(f"Received data: {data_received}")
