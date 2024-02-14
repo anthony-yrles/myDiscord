@@ -32,14 +32,13 @@ def render_sign_in(event=None):
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_signin.png')
     background_image.draw()
 
-    # frame_entry = tk.Frame(screen, bg='black', bd=0, padx=0, pady=0, relief="flat")
-    # frame_entry.place(x=300, y=141)
-
-    # entree = Entry(frame_entry, width=20, font=("Arial", 20), insertbackground="red", bg="black", fg="white", relief="flat")
-    # entree.insert(0, "Username")
-    # entree.pack()
     entry1 = CustomEntry(screen, "Username", x=300, y=141)
     entry2 = CustomEntry(screen, "Password", x=300, y=217)
+    entry3 = CustomEntry(screen, "Email", x=300, y=293)
+    entry4 = CustomEntry(screen, "Confirm email", x=300, y=369)
+
+    sign_in_button = Button(primus_canvas, 330, 450, './assets/sign_in_button.png', None)
+    # sign_in_button.bind('<Button-1>', render_sign_in)
 
 
     primus_canvas.update()
@@ -50,6 +49,18 @@ def render_log_in(event=None):
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_login.png')
     background_image.draw()
+
+    entry2 = CustomEntry(screen, "Username", x=300, y=217)
+    entry3 = CustomEntry(screen, "Password", x=300, y=293)
+
+    log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button.png', None)
+    # log_in_button.bind('<Button-1>', render_sign_in)
+
+    new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
+    new_here_button.bind('<Button-1>', render_sign_in)
+
+    pwd_lost_button = Button(primus_canvas, 430, 430, './assets/pwd_lost_button.png', None)
+    # pwd_lost_button.bind('<Button-1>', render_sign_in)
 
     primus_canvas.update()
     screen.mainloop()
