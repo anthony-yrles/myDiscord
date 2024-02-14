@@ -14,7 +14,7 @@ primus_canvas.pack()
 
 def render_main_menu():
 
-    background_image = Image(primus_canvas, 0, 0, './assets/bcg_menu.png')
+    background_image = Image(primus_canvas, 0, 0, './assets/bcg_menu_2.png')
     background_image.draw()
 
     sign_in_button = Button(primus_canvas, 100, 500, './assets/sign_in_button.png', None)
