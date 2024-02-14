@@ -54,3 +54,25 @@ class Server:
     #         client_thread = threading.Thread(target=self.handle_client, args=(client,))
     #         client_thread.start()
 
+    def create_user(self, username, password):
+        query = "INSERT INTO user_table (username, password) VALUES (%s, %s)"
+        params = (username, password)
+        self.executeQuery(query, params)
+
+    def check_username_availability(self, username):
+        query = "SELECT * FROM user_table WHERE username = %s"
+        params = (username,)
+        result = self.fetch(query, params)
+        return len(result) == 0
+
+    def check_password_availability(self, password):
+        query = "SELECT * FROM user_table WHERE password = %s"
+        params = (password,)
+        result = self.fetch(query, params)
+        return len(result) == 0
+
+    def authenticate_user(self, username, password):
+        query = "SELECT * FROM user_table WHERE username = %s AND password = %s"
+        params = (username, password)
+        result = self.fetch(query, params)
+        return len(result) > 0

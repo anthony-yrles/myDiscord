@@ -26,7 +26,8 @@ class Authentication:
     def logout(self):
         return "Logout successful"
     
-    def creation_account(self):
+    def creation_account(self, client):
+        client.send_data([])
         return "Account created"
     
     def test_name(self):

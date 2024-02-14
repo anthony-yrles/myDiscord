@@ -14,5 +14,5 @@ client est une instance de Client qui prend en paramètre server_address.
 
 client = Client()
 client.connect_to_server('10.10.74.165', 8080)
-client.send_data("Hello, Wawa!")
+client.send_data("Hello, Wawa w!")
 client.close()
