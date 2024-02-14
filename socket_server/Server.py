@@ -36,7 +36,7 @@ class Server:
         return self.db.fetch(query, params=None)
     
     def handle_client_request(self):
-        client_data_received = self.receive_data(1024)
+        client_data_received = self.server_socket.receive(1024)
         if client_data_received in self.query_dictionnary:
             result = self.query_dictionnary[client_data_received]()
             self.send_data(result)
