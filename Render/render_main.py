@@ -1,8 +1,8 @@
 import tkinter as tk
-from tkinter import Entry  
 from Render_image import Image
 from Render_Button import Button
 from Entry import CustomEntry
+import functools
 
 
 screen = tk.Tk()
@@ -18,17 +18,16 @@ def render_main_menu():
     background_image.draw()
 
     sign_in_button = Button(primus_canvas, 100, 500, './assets/sign_in_button.png', None)
-    sign_in_button.bind('<Button-1>', render_sign_in)
+    sign_in_button.bind('<Button-1>', lambda event: render_sign_in())
 
     log_in_button = Button(primus_canvas, 600, 500, './assets/log_in_button.png', None)
-    log_in_button.bind('<Button-1>', render_log_in)
+    log_in_button.bind('<Button-1>', lambda event: render_log_in())
 
     primus_canvas.update()
     screen.mainloop()
 
 
 def render_sign_in(event=None):
-
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_signin.png')
     background_image.draw()
 
@@ -37,6 +36,16 @@ def render_sign_in(event=None):
     entry3 = CustomEntry(screen, "Email", x=300, y=293)
     entry4 = CustomEntry(screen, "Confirm email", x=300, y=369)
 
+    real_sign_in_button = Button(primus_canvas, 330, 450, './assets/sign_in_button_2.png', None)
+    real_sign_in_button.bind('<Button-1>', lambda event: check_sign_in(entry1, entry2, entry3, entry4))
+
+    primus_canvas.update()
+    screen.mainloop()
+
+    
+
+def check_sign_in(entry1, entry2, entry3, entry4):
+    
     entry_values = {
         "Username": entry1.get_value(),
         "Password": entry2.get_value(),
@@ -44,14 +53,12 @@ def render_sign_in(event=None):
         "Confirm_email": entry4.get_value(),
     }
 
-    user_info["sign_in"] = entry_values
+    print("Clicked Sign In Button")
+    print("Entry Values:", entry_values)
 
-    sign_in_button = Button(primus_canvas, 330, 450, './assets/sign_in_button.png', None)
-    # sign_in_button.bind('<Button-1>', render_sign_in)
-
-
-    primus_canvas.update()
-    screen.mainloop()
+    if all(value != "" and value != entry.default_text for value, entry in zip(entry_values.values(), [entry1, entry2, entry3, entry4])):
+        user_info["sign_in"] = entry_values
+        print("User Info:", user_info["sign_in"])
 
 
 def render_log_in(event=None):
@@ -83,5 +90,5 @@ def render_log_in(event=None):
 
 
 
+
 render_main_menu()
-print(user_info)

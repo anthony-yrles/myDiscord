@@ -1,7 +1,5 @@
 import tkinter as tk
-from tkinter import Entry
-
-
+from tkinter import Entry, StringVar
 
 class CustomEntry:
     def __init__(self, parent, default_text, x, y):
@@ -10,7 +8,8 @@ class CustomEntry:
         self.frame = tk.Frame(parent, bg='black', bd=0, padx=0, pady=0, relief="flat")
         self.frame.place(x=x, y=y)
 
-        self.entry = Entry(self.frame, width=20, font=("Arial", 20), insertbackground="red", bg="black", fg="white", relief="flat")
+        self.entry_var = StringVar()
+        self.entry = Entry(self.frame, textvariable=self.entry_var, width=20, font=("Arial", 20), insertbackground="red", bg="black", fg="white", relief="flat")
         self.entry.insert(0, default_text)
         self.entry.bind('<FocusIn>', self.on_entry_click)
         self.entry.pack()
@@ -21,5 +20,4 @@ class CustomEntry:
             self.entry.config(fg='white') 
 
     def get_value(self):
-        return self.entry.get()
-
+        return self.entry_var.get()
