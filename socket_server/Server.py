@@ -53,7 +53,10 @@ class Server:
     
     def handle_client_request(self, client_socket):
         client_data_received = client_socket.recv(1024).decode()
-        method_name, *params = client_data_received.split(',')
+        request_data = json.loads(client_data_received)
+    
+        method_name = request_data['method']
+        params = request_data['params']
     
         if method_name in self.query_dictionnary:
             # Utiliser la méthode et les paramètres séparément
