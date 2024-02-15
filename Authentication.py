@@ -6,17 +6,6 @@ class Authentication:
         self.client = client
         self.user_list = []
 
-    # def authenticate(self, mail, password):
-    #     self.client.send_data('READ_TABLE_USER')
-    #     user_data = self.client.receive_data(1024)
-    #     if 'mail' in user_data and 'password' in user_data:
-    #         if user_data['mail'] == mail and user_data['password'] == password:
-    #             if user_data['name'] not in self.user_list:
-    #                 user_data['name'] = User(user_data['name'], user_data['surname'], user_data['mail'], user_data['password'], user_data['list_room_private'], user_data['list_room_group'], user_data['list_created_room'])
-    #                 self.user_list.append(user_data['name'])
-    #                 return user_data['name']
-    #     return False
-
     def authenticate(self, mail, password):
         self.client.send_data('READ_TABLE_USER')
         user_data_json = self.client.receive_data(1024)
@@ -30,6 +19,12 @@ class Authentication:
                     self.user_list.append(user)
                 return user
         return False
+    
+    def create_account(self, name, surname, mail, password):
+        params = name, surname, mail, password
+        self.client.send_data('CREATE_USER', params)
+        # user_data_json = self.client.receive_data(1024)
+        # user_data_list = json.loads(user_data_json)
         
     # def login(self):
     #     if self.authenticate():
@@ -59,7 +54,3 @@ class Authentication:
     # def change_password(self, new_password):
     #     self.password = new_password
     #     return "Password changed"
-    
-
-# Test
-# auth = Authentication("admin", "admin")

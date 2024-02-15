@@ -23,7 +23,8 @@ class Server:
         self.server_socket = Socket_server()
         self.server_socket.start(address, port, backlog)
         self.query_dictionnary = {
-            'READ_TABLE_USER' : self.read_table_user
+            'READ_TABLE_USER' : self.read_table_user,
+            'CREATE_USER' : self.create_user
             }
 
     def accept_client(self):
@@ -31,34 +32,6 @@ class Server:
 
     def close(self):
         self.server_socket.close()
-
-    # def send_data(self, client_socket, data):
-    #     if type(data) == list:
-    #         for d in data:
-    #             client_socket.send(d.encode())
-    #     client_socket.send(data.encode())
-
-    # def send_data(self, client_socket, data):
-    #     if isinstance(data, list):
-    #         for d in data:
-    #             if isinstance(d, str):
-    #                 client_socket.send(d.encode())
-    #             elif isinstance(d, tuple):
-    #                 for item in d:
-    #                     if isinstance(item, str):
-    #                         client_socket.send(item.encode())
-    #                     elif isinstance(item, int) or isinstance(item, float):
-    #                         client_socket.send(str(item).encode())
-    #                     else:
-    #                         print(f"Unsupported data type in tuple: {type(item)}")
-    #             elif isinstance(d, int) or isinstance(d, float):
-    #                 client_socket.send(str(d).encode())
-    #             else:
-    #                 print(f"Unsupported data type in list: {type(d)}")
-    #     elif isinstance(data, str):
-    #         client_socket.send(data.encode())
-    #     else:
-    #         print(f"Unsupported data type: {type(data)}")
 
     def send_data(self, client_socket, data):
         try:
@@ -69,50 +42,45 @@ class Server:
         except Exception as e:
             print(f"Error sending data: {e}")
 
-
-
     def read_table_user(self):
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
+    def create_user(self, name, surname, mail, password):
+        query = f'INSERT INTO USER VALUES (name, surname, mail, password) VALUES (%s, %s, %s, %)'
+        params = (name, surname, mail, password)
+        self.db.executeQuery(query, params)
+    
     def handle_client_request(self, client_socket):
         client_data_received = client_socket.recv(1024).decode()
-        if client_data_received in self.query_dictionnary:
-            result = self.query_dictionnary[client_data_received]()
+        method_name, *params = client_data_received.split(',')
+    
+        if method_name in self.query_dictionnary:
+            # Utiliser la méthode et les paramètres séparément
+            result = self.query_dictionnary[method_name](*params)
             self.send_data(client_socket, result)
         else:
             self.send_data("Command not recognized")
 
-                
-    #             break
-    #         self.send_data_to_all_clients(data)
+    # def create_user(self, username, password):
+    #     query = "INSERT INTO user_table (username, password) VALUES (%s, %s)"
+    #     params = (username, password)
+    #     self.executeQuery(query, params)
 
-    # def start_listening(self):
-    #     while True:
-    #         client_socket, client_address = self.accept_connection()
-    #         client = (client_socket, client_address)
-    #         client_thread = threading.Thread(target=self.handle_client, args=(client,))
-    #         client_thread.start()
+    # def check_username_availability(self, username):
+    #     query = "SELECT * FROM user_table WHERE username = %s"
+    #     params = (username,)
+    #     result = self.fetch(query, params)
+    #     return len(result) == 0
 
-    def create_user(self, username, password):
-        query = "INSERT INTO user_table (username, password) VALUES (%s, %s)"
-        params = (username, password)
-        self.executeQuery(query, params)
+    # def check_password_availability(self, password):
+    #     query = "SELECT * FROM user_table WHERE password = %s"
+    #     params = (password,)
+    #     result = self.fetch(query, params)
+    #     return len(result) == 0
 
-    def check_username_availability(self, username):
-        query = "SELECT * FROM user_table WHERE username = %s"
-        params = (username,)
-        result = self.fetch(query, params)
-        return len(result) == 0
-
-    def check_password_availability(self, password):
-        query = "SELECT * FROM user_table WHERE password = %s"
-        params = (password,)
-        result = self.fetch(query, params)
-        return len(result) == 0
-
-    def authenticate_user(self, username, password):
-        query = "SELECT * FROM user_table WHERE username = %s AND password = %s"
-        params = (username, password)
-        result = self.fetch(query, params)
-        return len(result) > 0
+    # def authenticate_user(self, username, password):
+    #     query = "SELECT * FROM user_table WHERE username = %s AND password = %s"
+    #     params = (username, password)
+    #     result = self.fetch(query, params)
+    #     return len(result) > 0
