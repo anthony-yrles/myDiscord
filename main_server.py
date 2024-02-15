@@ -17,8 +17,22 @@ password = "rootequipe7+"
 database = "mydiscord"
 
 server = Server('127.0.0.1', 8080, 5, host, user, password, database)
-client_socket, client_address = server.accept_client()
-data_received = client_socket.recv(1024)
-print(f"Received data: {data_received}")
-server.handle_client_request()
-server.close()
+# client_socket, client_address = server.accept_client()
+# data_received = client_socket.recv(1024)
+# print(f"Received data: {data_received}")
+# server.handle_client_request()
+# server.close()
+
+running = True
+while running:
+    client_socket, client_address = server.accept_client()
+    data_received = client_socket.recv(1024)
+    print(f"Received data: {data_received}")
+    # server.handle_client_request()
+    server.send_data("Hello from server")
+
+    user_input = input("Press 'q' to quit: ")
+    if user_input.lower() == 'q':
+        server.close()
+        running = False
+    

@@ -31,6 +31,9 @@ class Server:
     def close(self):
         self.server_socket.close()
 
+    def send_data(self, data):
+        self.server_socket.send(data)
+
     def read_table_user(self):
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
