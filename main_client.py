@@ -22,7 +22,8 @@ try:
     while running:
         # client.send_data('Hello from client')
         auth = Authentication(client)
-        user = auth.authenticate("john.doe@gmail.com", "password123")
+        auth.create_account("Serra", "Mathis","mathis.serra@gmail.com", "mdp1313mdp")
+        user = auth.authenticate("mathis.serra@gmail.com", "mdp1313mdp")
         user.show_user()
 
         user_input = input("Press 'q' to quit: ")

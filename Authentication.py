@@ -22,7 +22,7 @@ class Authentication:
     
     def create_account(self, name, surname, mail, password):
         params = name, surname, mail, password
-        self.client.send_data('CREATE_USER', params)
+        self.client.send_data(('CREATE_USER', params))
         # user_data_json = self.client.receive_data(1024)
         # user_data_list = json.loads(user_data_json)
         

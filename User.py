@@ -80,3 +80,11 @@ class User:
         else:
             print("Room not found")
 
+    def show_user(self):
+        print(f"Name: {self.name}")
+        print(f"Surname: {self.surname}")
+        print(f"Mail: {self.mail}")
+        print(f"Password: {self.password}")
+        self.show_list_room()
+        self.show_list_created_room()
+        print("")
