@@ -23,7 +23,6 @@ try:
         # client.send_data('Hello from client')
         auth = Authentication(client)
         user = auth.authenticate("john.doe@gmail.com", "password123")
-        user.show_user()
 
         user_input = input("Press 'q' to quit: ")
         if user_input.lower() == 'q':
