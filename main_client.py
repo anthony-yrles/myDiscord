@@ -14,24 +14,25 @@ client est une instance de Client qui prend en paramètre server_address.
 """
 
 client = Client()
-# client.connect_to_server('127.0.0.1', 8080)
-# auth = Authentication(client)
-# user = auth.authenticate("john.doe@gmail.com", "password123")
-# print(user)
 
-running = True 
-while running:
+try:
     client.connect_to_server('127.0.0.1', 8080)
-    # auth = Authentication(client)
-    client.send_data('Hello from client')
-    server_response = client.receive_data(1024)
-    print(server_response)
-    # user = auth.authenticate("john.doe@gmail.com", "password123")
-    # print(user)
 
-    user_input = input("Press 'q' to quit: ")
-    if user_input.lower() == 'q':
-        client.close()
-        running = False
+    running = True 
+    while running:
+        # client.send_data('Hello from client')
+        auth = Authentication(client)
+        user = auth.authenticate("john.doe@gmail.com", "password123")
+        print(user)
+        # server_response = client.receive_data(1024)
+        # print(server_response)
 
-# client.close()
+        user_input = input("Press 'q' to quit: ")
+        if user_input.lower() == 'q':
+            client.close()
+            break
+except Exception as e:
+    print(f"Error: {e}")
+finally:
+    client.close()
+

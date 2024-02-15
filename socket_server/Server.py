@@ -31,18 +31,18 @@ class Server:
     def close(self):
         self.server_socket.close()
 
-    def send_data(self, data):
-        self.server_socket.send(data)
+    def send_data(self, client_socket, data):
+        client_socket.send(data.encode())
 
     def read_table_user(self):
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def handle_client_request(self):
+    def handle_client_request(self, client_socket):
         client_data_received = self.server_socket.receive(1024)
         if client_data_received in self.query_dictionnary:
             result = self.query_dictionnary[client_data_received]()
-            self.send_data(result)
+            self.send_data(client_socket, result)
         else:
             self.send_data("Command not recognized")
 
