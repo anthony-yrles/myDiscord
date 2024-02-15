@@ -18,17 +18,10 @@ database = "mydiscord"
 
 server = Server('127.0.0.1', 8080, 5, host, user, password, database)
 
-running = True
 try:
     while True:
-        client_socket, client_address = server.accept_client()
-        print(f"Accepted connection from {client_address}")
-        
-        data_received = client_socket.recv(1024)
-        print(f"Received data: {data_received}")
-        
+        client_socket, client_address = server.accept_client()        
         server.handle_client_request(client_socket)
-        # server.send_data(client_socket, "Hello from server")
 
         user_input = input("Press 'q' to quit: ")
         if user_input.lower() == 'q':

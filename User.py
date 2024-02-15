@@ -80,9 +80,3 @@ class User:
         else:
             print("Room not found")
 
-    
-# user = User("John", "Doe", "john.doe@example.com", "password123", ["private room 1", "private room 2", "private room 3"], ["group room 1", "group room 2"], ["created room 1", "created room 2", "created room 3", "created room 4", "created room 5"])
-# user.show_list_room()
-# user.show_list_created_room()
-# user.quit_room("private room 2")
-# user.show_list_room()
