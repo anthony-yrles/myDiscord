@@ -7,22 +7,23 @@ class Authentication:
         self.user_list = []
 
     def authenticate(self, mail, password):
-        self.client.send_data('READ_TABLE_USER')
+        self.client.send_data('READ_TABLE_USER','')
         user_data_json = self.client.receive_data(1024)
         user_data_list = json.loads(user_data_json)
+        print(user_data_list)
         if user_data_list:
-            user_data = user_data_list[0]
-            user_id, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
-            if user_mail == mail and user_password == password:
-                user = User(name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
-                if user not in self.user_list:
-                    self.user_list.append(user)
-                return user
+            for user_data in user_data_list:
+                user_id, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
+                if user_mail == mail and user_password == password:
+                    user = User(name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
+                    if user not in self.user_list:
+                        self.user_list.append(user)
+                    return user
         return False
     
     def create_account(self, name, surname, mail, password):
         params = name, surname, mail, password
-        self.client.send_data(('CREATE_USER', params))
+        self.client.send_data('CREATE_USER', params)
         # user_data_json = self.client.receive_data(1024)
         # user_data_list = json.loads(user_data_json)
         

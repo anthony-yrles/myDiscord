@@ -47,7 +47,7 @@ class Server:
         return self.db.fetch(query, params=None)
     
     def create_user(self, name, surname, mail, password):
-        query = f'INSERT INTO USER VALUES (name, surname, mail, password) VALUES (%s, %s, %s, %)'
+        query = f'INSERT INTO user (name, surname, mail, password) VALUES (%s, %s, %s, %s)'
         params = (name, surname, mail, password)
         self.db.executeQuery(query, params)
     
