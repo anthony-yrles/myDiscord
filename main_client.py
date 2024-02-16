@@ -6,6 +6,7 @@ données au serveur et reçoit des réponses.
 
 
 from Render.current_render import state
+from Render.render_authentication import client
 
 """
 server_address est un tuple contenant l'adresse IP du serveur et le port sur lequel le serveur écoute.
