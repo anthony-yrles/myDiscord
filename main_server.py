@@ -13,7 +13,7 @@ server est une instance de Server qui prend en paramètre server_address, host, 
 
 host = "127.0.0.1"
 user = "root"
-password = "rootequipe7+"  
+password = "SKenan30mg/"  
 database = "mydiscord"
 
 server = Server('127.0.0.1', 8080, 5, host, user, password, database)

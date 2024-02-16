@@ -46,9 +46,9 @@ class Server:
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def create_user(self, name, surname, mail, password):
-        query = f'INSERT INTO user (name, surname, mail, password) VALUES (%s, %s, %s, %s)'
-        params = (name, surname, mail, password)
+    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"$.room1": "bienvenue"}', list_room_created_room = '{}'):
+        query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_room_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
+        params = (name, surname, mail, password, list_room_private, list_room_group, list_room_created_room)
         self.db.executeQuery(query, params)
     
     def handle_client_request(self, client_socket):
