@@ -3,6 +3,7 @@ from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
 from Authentication import Authentication
+from socket_client.Client import Client
 
 
 screen = tk.Tk()
@@ -11,7 +12,8 @@ primus_canvas = tk.Canvas(screen, width=900, height=600)
 primus_canvas.pack()
 
 user_info = {}
-
+client = Client()
+auth = Authentication(client)
 
 def render_main_menu():
 
@@ -27,39 +29,42 @@ def render_main_menu():
     primus_canvas.update()
     screen.mainloop()
 
+def on_real_sign_in_button_click(entry1, entry2, entry3, entry4):
+    auth.create_account(entry1.get_value(), entry2.get_value(), entry3.get_value(), entry4.get_value())
+    render_log_in()
 
 def render_sign_in(event=None):
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_signin.png')
     background_image.draw()
 
-    entry1 = CustomEntry(screen, "Username", x=300, y=141)
-    entry2 = CustomEntry(screen, "Password", x=300, y=217)
+    entry1 = CustomEntry(screen, "Name", x=300, y=141)
+    entry2 = CustomEntry(screen, "Username", x=300, y=217)
     entry3 = CustomEntry(screen, "Email", x=300, y=293)
-    entry4 = CustomEntry(screen, "Confirm email", x=300, y=369)
+    entry4 = CustomEntry(screen, "Password", x=300, y=369)
 
     real_sign_in_button = Button(primus_canvas, 330, 450, './assets/sign_in_button_2.png', None)
-    real_sign_in_button.bind('<Button-1>', lambda event: check_sign_in(entry1, entry2, entry3, entry4))
+    real_sign_in_button.bind('<Button-1>', lambda event: on_real_sign_in_button_click(entry1, entry2, entry3, entry4))
 
     primus_canvas.update()
     screen.mainloop()
 
     
 
-def check_sign_in(entry1, entry2, entry3, entry4):
+# def check_sign_in(entry1, entry2, entry3, entry4):
     
-    entry_values = {
-        "Username": entry1.get_value(),
-        "Password": entry2.get_value(),
-        "Email": entry3.get_value(),
-        "Confirm_email": entry4.get_value(),
-    }
+#     entry_values = {
+#         "Username": entry1.get_value(),
+#         "Password": entry2.get_value(),
+#         "Email": entry3.get_value(),
+#         "Confirm_email": entry4.get_value(),
+#     }
 
-    print("Clicked Sign In Button")
-    print("Entry Values:", entry_values)
+#     print("Clicked Sign In Button")
+#     print("Entry Values:", entry_values)
 
-    if all(value != "" and value != entry.default_text for value, entry in zip(entry_values.values(), [entry1, entry2, entry3, entry4])):
-        user_info["sign_in"] = entry_values
-        print("User Info:", user_info["sign_in"])
+#     if all(value != "" and value != entry.default_text for value, entry in zip(entry_values.values(), [entry1, entry2, entry3, entry4])):
+#         user_info["sign_in"] = entry_values
+#         print("User Info:", user_info["sign_in"])
 
 
 def render_log_in(event=None):
@@ -67,18 +72,18 @@ def render_log_in(event=None):
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_login.png')
     background_image.draw()
 
-    entry2 = CustomEntry(screen, "Username", x=300, y=217)
+    entry2 = CustomEntry(screen, "Email", x=300, y=217)
     entry3 = CustomEntry(screen, "Password", x=300, y=293)
 
     entry_values = {
-        "Username": entry2.get_value(),
+        "Email": entry2.get_value(),
         "Password": entry3.get_value(),
     }
 
     user_info["log_in"] = entry_values
 
     log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button.png', None)
-    log_in_button.bind('<Button-1>', render_chat)
+    log_in_button.bind('<Button-1>', check_authenticate(entry2.get_value(), entry3.get_value()))
 
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
@@ -89,7 +94,9 @@ def render_log_in(event=None):
     primus_canvas.update()
     screen.mainloop()
 
-
+def check_authenticate(mail, password, event=None):
+    if auth.authenticate(mail, password):
+        render_chat()
 
 def render_chat(event=None):
 
