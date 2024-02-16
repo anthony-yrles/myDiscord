@@ -2,7 +2,6 @@ import tkinter as tk
 from Render_image import Image
 from Render_Button import Button
 from Entry import CustomEntry
-import functools
 
 
 screen = tk.Tk()
@@ -77,7 +76,7 @@ def render_log_in(event=None):
     user_info["log_in"] = entry_values
 
     log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button.png', None)
-    # log_in_button.bind('<Button-1>', render_sign_in)
+    log_in_button.bind('<Button-1>', render_chat)
 
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
@@ -87,6 +86,21 @@ def render_log_in(event=None):
 
     primus_canvas.update()
     screen.mainloop()
+
+
+
+def render_chat(event=None):
+
+    background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
+    background_image.draw()
+
+    micro_button = Button(primus_canvas, 100, 500, './assets/micro_button.png', None)
+    # micro_button.bind('<Button-1>', render_chat)
+
+
+    primus_canvas.update()
+    screen.mainloop()
+
 
 
 
