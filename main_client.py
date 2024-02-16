@@ -6,7 +6,6 @@ données au serveur et reçoit des réponses.
 
 
 from Render.current_render import state
-from Render.render_authentication import client
 
 """
 server_address est un tuple contenant l'adresse IP du serveur et le port sur lequel le serveur écoute.
@@ -14,11 +13,7 @@ client est une instance de Client qui prend en paramètre server_address.
 
 """
 
-
-
 try:
-    client.connect_to_server('127.0.0.1', 8080)
-
     running = True 
     while running:
 
@@ -31,10 +26,9 @@ try:
 
         user_input = input("Press 'q' to quit: ")
         if user_input.lower() == 'q':
-            client.close()
+            # client.close()
             break
 except Exception as e:
     print(f"Error: {e}")
-finally:
-    client.close()
-
+# finally:
+    # client.close()

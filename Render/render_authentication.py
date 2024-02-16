@@ -13,6 +13,7 @@ primus_canvas.pack()
 
 user_info = {}
 client = Client()
+client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
 def render_main_menu():
