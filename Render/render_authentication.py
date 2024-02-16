@@ -50,24 +50,7 @@ def render_sign_in(event=None):
     screen.mainloop()
 
     
-
-# def check_sign_in(entry1, entry2, entry3, entry4):
-    
-#     entry_values = {
-#         "Username": entry1.get_value(),
-#         "Password": entry2.get_value(),
-#         "Email": entry3.get_value(),
-#         "Confirm_email": entry4.get_value(),
-#     }
-
-#     print("Clicked Sign In Button")
-#     print("Entry Values:", entry_values)
-
-#     if all(value != "" and value != entry.default_text for value, entry in zip(entry_values.values(), [entry1, entry2, entry3, entry4])):
-#         user_info["sign_in"] = entry_values
-#         print("User Info:", user_info["sign_in"])
-    
-def check_authenticate(mail, password):
+def check_authenticate(mail, password, event=None):
     print("Clicked Log In Button")
     if auth.authenticate(mail, password):
         render_chat()
