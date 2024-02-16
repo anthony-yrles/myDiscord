@@ -1,7 +1,8 @@
 import tkinter as tk
-from Render_image import Image
-from Render_Button import Button
-from Entry import CustomEntry
+from Render.Render_image import Image
+from Render.Render_Button import Button
+from Render.Entry import CustomEntry
+from Authentication import Authentication
 
 
 screen = tk.Tk()
@@ -10,6 +11,7 @@ primus_canvas = tk.Canvas(screen, width=900, height=600)
 primus_canvas.pack()
 
 user_info = {}
+
 
 def render_main_menu():
 

@@ -6,6 +6,8 @@ données au serveur et reçoit des réponses.
 
 from socket_client.Client import *
 from Authentication import *
+from Render.current_render import state
+import Render.current_render as Current_render
 
 """
 server_address est un tuple contenant l'adresse IP du serveur et le port sur lequel le serveur écoute.
@@ -20,6 +22,9 @@ try:
 
     running = True 
     while running:
+
+        state()()
+
         auth = Authentication(client)
         auth.create_account('Serra', 'Mathis','mathis.serra@gmail.com', 'mdp1313mdp')
         user = auth.authenticate("mathis.serra@gmail.com", "mdp1313mdp")

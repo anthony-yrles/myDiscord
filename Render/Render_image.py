@@ -1,6 +1,6 @@
 import tkinter as tk
 
-class Image:
+class Image():
     def __init__(self, canvas, x, y, image_path):
         self.canvas = canvas
         self.x = x
