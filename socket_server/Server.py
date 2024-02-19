@@ -28,7 +28,9 @@ class Server:
             'READ_TABLE_MESSAGE' : self.read_table_message,
             'READ_LIST_ROOM_USER' : self.read_list_room_user,
             'CREATE_MESSAGE' : self.create_message,
-            'DELETE_MESSAGE' : self.delete_message
+            'DELETE_MESSAGE' : self.delete_message,
+            'MODIFY_MESSAGE' : self.modify_message,
+            'MODIFY_REACTION_COUNT' : self.modify_reaction_count
             }
 
     def accept_client(self):
@@ -72,7 +74,17 @@ class Server:
         query = f'DELETE FROM message WHERE id = %s'
         params = (id,)
         self.db.executeQuery(query, params)
-    
+
+    def modify_message(self, new_message, id):
+        query = f'UPDATE message SET message_text = %s WHERE id = %s'
+        params = (new_message, id)
+        self.db.executeQuery(query, params)
+
+    def modify_reaction_count(self, reaction_count_1, reaction_count_2, id):
+        query = f'UPDATE message SET reaction_count_1 = %s, reaction_count_2 = %s WHERE id = %s'
+        params = (reaction_count_1, reaction_count_2, id)
+        self.db.executeQuery(query, params)
+
     def handle_client_request(self, client_socket):
         client_data_received = client_socket.recv(1024).decode()
         request_data = json.loads(client_data_received)
