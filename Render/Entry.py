@@ -21,3 +21,10 @@ class CustomEntry:
 
     def get_value(self):
         return self.entry_var.get()
+    
+    def get_frame(self):
+        return self.frame
+
+    def destroy_entry(self):
+        self.entry.destroy()
+        self.frame.destroy()
