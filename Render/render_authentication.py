@@ -13,7 +13,8 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.81.131', 8080)
+# client.connect_to_server('10.10.81.131', 8080)
+client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
 def render_main_menu():
@@ -99,20 +100,26 @@ def render_chat(event=None):
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
 
-    micro_button = Button(primus_canvas, 100, 500, './assets/micro_button.png', None)
+    micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
     # micro_button.bind('<Button-1>', render_chat)
+    message_button = Button(primus_canvas, 25, 540, './assets/message_button.png', None)
+    # message_button.bind('<Button-1>', render_chat)
+    
+    setting_button = Button(primus_canvas, 130, 535, './assets/setting_button.png', None)
+    # setting_button.bind('<Button-1>', render_main_menu)
 
-    add_chat_button = Button(primus_canvas, 600, 500, './assets/add_chat_button.png', None)
+    add_chat_button = Button(primus_canvas, 135, 30, './assets/add_chat_button.png', None)
     # add_chat_button.bind('<Button-1>', render_main_menu)
 
-    delete_button = Button(primus_canvas, 700, 500, './assets/delete_button.png', None)
+    delete_button = Button(primus_canvas, 750, 40, './assets/delete_button.png', None)
     # delete_button.bind('<Button-1>', render_main_menu)
 
-    search_button = Button(primus_canvas, 750, 500, './assets/search_button.png', None)
+    search_button = Button(primus_canvas, 700, 30, './assets/search_button.png', None)
     # search_button.bind('<Button-1>', render_main_menu)
 
-    setting_button = Button(primus_canvas, 850, 500, './assets/setting_button.png', None)
-    # setting_button.bind('<Button-1>', render_main_menu)
+    gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
+    # gun_button.bind('<Button-1>', render_main_menu)
+
 
     screen.mainloop()
     primus_canvas.update()
