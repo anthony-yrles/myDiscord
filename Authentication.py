@@ -20,11 +20,20 @@ class Authentication:
                     return True
         return False
     
+    def password_enter(password):
+        autorized_Special_Char = "!@#$%^&*"
+        if len(password) < 8 or not any(char.isupper() for char in password) or not any(char.islower() for char in password) or not any(char in autorized_Special_Char for char in password) or not any(char.isdigit() for char in password):
+            return False
+        return True
+    
     def create_account(self, name, surname, mail, password):
-        params = name, surname, mail, password
-        self.client.send_data('CREATE_USER', params)
-        # user_data_json = self.client.receive_data(1024)
-        # user_data_list = json.loads(user_data_json)
+        if self.password_enter(password):
+            params = name, surname, mail, password
+            self.client.send_data('CREATE_USER', params)
+        
+            # user_data_json = self.client.receive_data(1024)
+            # user_data_list = json.loads(user_data_json)
+
         
     # def login(self):
     #     if self.authenticate():
