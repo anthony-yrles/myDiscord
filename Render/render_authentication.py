@@ -13,7 +13,7 @@ primus_canvas.pack()
 
 user_info = {}
 client = Client()
-client.connect_to_server('10.10.78.21', 8080)
+client.connect_to_server('10.10.79.211', 8080)
 auth = Authentication(client)
 
 def render_main_menu():
@@ -50,7 +50,7 @@ def render_sign_in(event=None):
     screen.mainloop()
 
     
-def check_authenticate(mail, password, event=None):
+def check_authenticate(mail, password):
     print("Clicked Log In Button")
     if auth.authenticate(mail, password):
         render_chat()
