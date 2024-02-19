@@ -6,6 +6,8 @@ données au serveur et reçoit des réponses.
 
 from socket_client.Client import *
 from Authentication import *
+from Text_room import *
+
 
 """
 server_address est un tuple contenant l'adresse IP du serveur et le port sur lequel le serveur écoute.
@@ -20,11 +22,10 @@ try:
 
     running = True 
     while running:
-        # client.send_data('Hello from client')
         auth = Authentication(client)
         # auth.create_account('Serra', 'Mathis','mathis.serra@gmail.com', 'mdp1313mdp')
-        user = auth.authenticate("mathis.serra@gmail.com", "mdp1313mdp")
-        user.show_user()
+        list_message = Text_room('room_name', ['moderator1', 'moderator2'], ['admin1', 'admin2'], ['user1', 'user2'], client)
+        list_message.read_all_mess()
 
         user_input = input("Press 'q' to quit: ")
         if user_input.lower() == 'q':

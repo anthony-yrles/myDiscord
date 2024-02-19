@@ -24,7 +24,11 @@ class Server:
         self.server_socket.start(address, port, backlog)
         self.query_dictionnary = {
             'READ_TABLE_USER' : self.read_table_user,
-            'CREATE_USER' : self.create_user
+            'CREATE_USER' : self.create_user,
+            'READ_TABLE_MESSAGE' : self.read_table_message,
+            'READ_LIST_ROOM_USER' : self.read_list_room_user,
+            'CREATE_MESSAGE' : self.create_message,
+            'DELETE_MESSAGE' : self.delete_message
             }
 
     def accept_client(self):
@@ -49,6 +53,24 @@ class Server:
     def create_user(self, name, surname, mail, password):
         query = f'INSERT INTO user (name, surname, mail, password) VALUES (%s, %s, %s, %s)'
         params = (name, surname, mail, password)
+        self.db.executeQuery(query, params)
+
+    def read_table_message(self):
+        query = f'SELECT * FROM message'
+        return self.db.fetch(query, params=None)
+
+    def read_list_room_user(self):
+        query = f'SELECT list_user FROM text_room'
+        return self.db.fetch(query, params=None)
+
+    def create_message(self, hour, author, message_text, id_room):
+        query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
+        params = (hour, author, message_text)
+        self.db.executeQuery(query, params)
+
+    def delete_message(self, id):
+        query = f'DELETE FROM message WHERE id = %s'
+        params = (id,)
         self.db.executeQuery(query, params)
     
     def handle_client_request(self, client_socket):

@@ -61,17 +61,15 @@ class Room:
                 return f"Room '{name}' deleted successfully."
         return f"No room found with the name '{name}'."
 
-jjk = Room("jjk", ["walid_modo", "anthony_modo"], ["barbadmin"], ["mathis_user", "kevin_user"])
-one_piece = Room("one_piece", ["walid_modo", "anthony_modo"], ["barbadmin"], ["mathis_user", "kevin_user"])
-rooms = [jjk, one_piece]
-print("Avant la suppression :")
-for room in rooms:
-    room.print_details()
+# jjk = Room("jjk", ["walid_modo", "anthony_modo"], ["barbadmin"], ["mathis_user", "kevin_user"])
+# one_piece = Room("one_piece", ["walid_modo", "anthony_modo"], ["barbadmin"], ["mathis_user", "kevin_user"])
+# rooms = [jjk, one_piece]
+# print("Avant la suppression :")
+# for room in rooms:
+#     room.print_details()
 
-result = rooms[0].delete_room("jjk", rooms)
-# result1 = rooms[0].delete_room("one_piece", rooms)
-print(result)
-# print(result1)
-print("\nAprès la suppression :")
-for room in rooms:
-    room.print_details()
+# result = rooms[0].delete_room("one_piece", rooms)
+# print(result)
+# print("\nAprès la suppression :")
+# for room in rooms:
+#     room.print_details()
