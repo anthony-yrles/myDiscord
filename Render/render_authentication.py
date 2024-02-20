@@ -13,7 +13,7 @@ primus_canvas.pack()
 
 user_info = {}
 client = Client()
-client.connect_to_server('127.0.0.1', 8080)
+client.connect_to_server('10.10.79.211', 8080)
 auth = Authentication(client)
 
 def render_main_menu():
@@ -50,23 +50,12 @@ def render_sign_in(event=None):
     screen.mainloop()
 
     
-
-# def check_sign_in(entry1, entry2, entry3, entry4):
-    
-#     entry_values = {
-#         "Username": entry1.get_value(),
-#         "Password": entry2.get_value(),
-#         "Email": entry3.get_value(),
-#         "Confirm_email": entry4.get_value(),
-#     }
-
-#     print("Clicked Sign In Button")
-#     print("Entry Values:", entry_values)
-
-#     if all(value != "" and value != entry.default_text for value, entry in zip(entry_values.values(), [entry1, entry2, entry3, entry4])):
-#         user_info["sign_in"] = entry_values
-#         print("User Info:", user_info["sign_in"])
-
+def check_authenticate(mail, password):
+    print("Clicked Log In Button")
+    if auth.authenticate(mail, password):
+        render_chat()
+    else:
+        print("Authentication failed")
 
 def render_log_in(event=None):
 
@@ -76,15 +65,9 @@ def render_log_in(event=None):
     entry2 = CustomEntry(screen, "Email", x=300, y=217)
     entry3 = CustomEntry(screen, "Password", x=300, y=293)
 
-    entry_values = {
-        "Email": entry2.get_value(),
-        "Password": entry3.get_value(),
-    }
 
-    user_info["log_in"] = entry_values
-
-    log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button.png', None)
-    log_in_button.bind('<Button-1>', check_authenticate(entry2.get_value(), entry3.get_value()))
+    real_log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button_2.png', None)
+    real_log_in_button.bind('<Button-1>', lambda event: check_authenticate(entry2.get_value(), entry3.get_value()))
 
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
@@ -95,9 +78,7 @@ def render_log_in(event=None):
     primus_canvas.update()
     screen.mainloop()
 
-def check_authenticate(mail, password, event=None):
-    if auth.authenticate(mail, password):
-        render_chat()
+
 
 def render_chat(event=None):
 

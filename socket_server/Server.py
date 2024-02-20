@@ -24,7 +24,13 @@ class Server:
         self.server_socket.start(address, port, backlog)
         self.query_dictionnary = {
             'READ_TABLE_USER' : self.read_table_user,
-            'CREATE_USER' : self.create_user
+            'CREATE_USER' : self.create_user,
+            'READ_TABLE_MESSAGE' : self.read_table_message,
+            'READ_LIST_ROOM_USER' : self.read_list_room_user,
+            'CREATE_MESSAGE' : self.create_message,
+            'DELETE_MESSAGE' : self.delete_message,
+            'MODIFY_MESSAGE' : self.modify_message,
+            'MODIFY_REACTION_COUNT' : self.modify_reaction_count
             }
 
     def accept_client(self):
@@ -46,11 +52,39 @@ class Server:
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"$.room1": "bienvenue"}', list_room_created_room = '{}'):
+    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"room1": "bienvenue"}', list_room_created_room = '{}'):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_room_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
         params = (name, surname, mail, password, list_room_private, list_room_group, list_room_created_room)
         self.db.executeQuery(query, params)
-    
+
+    def read_table_message(self):
+        query = f'SELECT * FROM message'
+        return self.db.fetch(query, params=None)
+
+    def read_list_room_user(self):
+        query = f'SELECT list_user FROM text_room'
+        return self.db.fetch(query, params=None)
+
+    def create_message(self, hour, author, message_text, id_room):
+        query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
+        params = (hour, author, message_text)
+        self.db.executeQuery(query, params)
+
+    def delete_message(self, id):
+        query = f'DELETE FROM message WHERE id = %s'
+        params = (id,)
+        self.db.executeQuery(query, params)
+
+    def modify_message(self, new_message, id):
+        query = f'UPDATE message SET message_text = %s WHERE id = %s'
+        params = (new_message, id)
+        self.db.executeQuery(query, params)
+
+    def modify_reaction_count(self, reaction_count_1, reaction_count_2, id):
+        query = f'UPDATE message SET reaction_count_1 = %s, reaction_count_2 = %s WHERE id = %s'
+        params = (reaction_count_1, reaction_count_2, id)
+        self.db.executeQuery(query, params)
+
     def handle_client_request(self, client_socket):
         client_data_received = client_socket.recv(1024).decode()
         request_data = json.loads(client_data_received)
