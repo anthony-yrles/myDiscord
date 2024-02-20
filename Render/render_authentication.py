@@ -115,7 +115,7 @@ def render_chat(user, event=None):
     # setting_button.bind('<Button-1>', render_main_menu)
 
     add_chat_button = Button(primus_canvas, 135, 30, './assets/add_chat_button.png', None)
-    # add_chat_button.bind('<Button-1>', render_main_menu)
+    add_chat_button.bind('<Button-1>', render_main_menu)
 
     delete_button = Button(primus_canvas, 750, 40, './assets/delete_button.png', None)
     # delete_button.bind('<Button-1>', render_main_menu)
@@ -143,7 +143,7 @@ def render_chat(user, event=None):
         for room_name, room_message in room_group_dict.items():
             print(f"Room: {room_name}, Message: {room_message}")
 
-            room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/avatar_walid.png', None)
+            room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
             # room_button.bind('<Button-1>', render_main_menu)
             room_button_list.append(room_button)
 
@@ -154,7 +154,7 @@ def render_chat(user, event=None):
             i += 1
 
     for button in room_button_list:
-        button.pack()
+        button.bind('<Button-1>', None)
 
 
     screen.mainloop()

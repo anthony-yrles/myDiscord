@@ -1,3 +1,5 @@
+from Room import Room
+
 class User:
     def __init__(self, name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
         self.name = name
@@ -88,3 +90,21 @@ class User:
         self.show_list_room()
         self.show_list_created_room()
         print("")
+
+    #create a new room
+    def create_room(self, name, list_modo, list_admin, list_user):
+        return Room(name, list_modo, list_admin, list_user)
+
+    #modify the room
+    def modify_room(self, name, list_modo, list_admin, list_user):
+        self.name = name
+        self.list_modo = list_modo
+        self.list_admin = list_admin
+        self.list_user = list_user
+
+    def delete_room(self, name, list_room):
+        for room in list_room:
+            if room.name == name:
+                list_room.remove(room)
+                return f"Room '{name}' deleted successfully."
+        return f"No room found with the name '{name}'."
