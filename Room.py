@@ -29,17 +29,6 @@ class Room:
     def set_list_user(self, list_user):
         self.list_user = list_user
 
-    #create a new room
-    def create_room(self, name, list_modo, list_admin, list_user):
-        return Room(name, list_modo, list_admin, list_user)
-
-    #modify the room
-    def modify_room(self, name, list_modo, list_admin, list_user):
-        self.name = name
-        self.list_modo = list_modo
-        self.list_admin = list_admin
-        self.list_user = list_user
-
     #research a room
     def research_room(self, name):
         if self.name == name:
@@ -54,22 +43,5 @@ class Room:
         print("Admins:", ", ".join(self.list_admin))
         print("Users:", ", ".join(self.list_user))
 
-    def delete_room(self, name, list_room):
-        for room in list_room:
-            if room.name == name:
-                list_room.remove(room)
-                return f"Room '{name}' deleted successfully."
-        return f"No room found with the name '{name}'."
 
-# jjk = Room("jjk", ["walid_modo", "anthony_modo"], ["barbadmin"], ["mathis_user", "kevin_user"])
-# one_piece = Room("one_piece", ["walid_modo", "anthony_modo"], ["barbadmin"], ["mathis_user", "kevin_user"])
-# rooms = [jjk, one_piece]
-# print("Avant la suppression :")
-# for room in rooms:
-#     room.print_details()
 
-# result = rooms[0].delete_room("one_piece", rooms)
-# print(result)
-# print("\nAprès la suppression :")
-# for room in rooms:
-#     room.print_details()
