@@ -16,17 +16,13 @@ user = "root"
 password = "rootequipe7+"  
 database = "mydiscord"
 
-server = Server('127.0.0.1', 8080, 5, host, user, password, database)
+server = Server('10.10.82.175', 8080, 5, host, user, password, database)
 
 try:
     while True:
         client_socket, client_address = server.accept_client()        
         server.handle_client_request(client_socket)
-
-        user_input = input("Press 'q' to quit: ")
-        if user_input.lower() == 'q':
-            server.close()
-            break
+        
 except Exception as e:
     print(f"Error: {e}")
 finally:
