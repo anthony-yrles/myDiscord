@@ -5,7 +5,6 @@ from Render.Render_Button import Button
 from Render.Entry import CustomEntry
 from Authentication import Authentication
 from socket_client.Client import Client
-import json
 
 
 screen = tk.Tk()
@@ -33,7 +32,6 @@ def render_main_menu():
     screen.mainloop()
     primus_canvas.update()
 
-
 def on_real_sign_in_button_click(entry1, entry2, entry3, entry4):
     auth.create_account(entry1.get_value(), entry2.get_value(), entry3.get_value(), entry4.get_value())
     render_log_in()
@@ -53,8 +51,6 @@ def render_sign_in(event=None):
     real_sign_in_button.bind('<Button-1>', lambda event: on_real_sign_in_button_click(entry1, entry2, entry3, entry4))
     screen.mainloop()
     primus_canvas.update()
-
-
     
 def check_authenticate(mail, password):
     print("Clicked Log In Button")
@@ -91,11 +87,6 @@ def render_log_in(event=None):
     screen.mainloop()
     primus_canvas.update()
 
-
-
-
-
-
 def render_chat(user, event=None):
 
     for entry in custom_entries:
@@ -103,8 +94,6 @@ def render_chat(user, event=None):
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
-
-
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
     # micro_button.bind('<Button-1>', render_chat)
@@ -126,21 +115,14 @@ def render_chat(user, event=None):
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     # gun_button.bind('<Button-1>', render_main_menu)
 
-    # room_group = user.get_list_room_group()
-    # valeur = room_group.split(":")
-    # variable_un = valeur[0]
-    # variable_deux = valeur[1]
-
-    room_group = user.get_list_room_group()
-    room_group_dict = json.loads(room_group)
-    print(f"Type of room_group: {type(room_group_dict)}")
+    fusion_list = user.list_room_fusion
 
     room_button_list = []
     room_labels = []
 
-    if isinstance(room_group_dict, dict):
+    if isinstance(fusion_list, dict):
         i = 0  
-        for room_name, room_message in room_group_dict.items():
+        for room_name, room_message in fusion_list.items():
             print(f"Room: {room_name}, Message: {room_message}")
 
             room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/avatar_walid.png', None)
@@ -159,8 +141,3 @@ def render_chat(user, event=None):
 
     screen.mainloop()
     primus_canvas.update()
-
-
-
-
-
