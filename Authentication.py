@@ -4,7 +4,13 @@ from User import User
 class Authentication:
     def __init__(self, client):
         self.client = client
+        
         self.user_list = []
+
+    def get_client(self):
+        return self.client
+    def set_client(self, new_client):
+        self.client = new_client
 
     def authenticate(self, mail, password):
         self.client.send_data('READ_TABLE_USER','')
@@ -12,7 +18,7 @@ class Authentication:
         user_data_list = json.loads(user_data_json)
         if user_data_list:
             for user_data in user_data_list:
-                user_id, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
+                name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
                 if user_mail == mail and user_password == password:
                     user = User(name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
                     if user not in self.user_list:
