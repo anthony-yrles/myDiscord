@@ -1,6 +1,6 @@
 import tkinter as tk
 
-class Image:
+class Image():
     def __init__(self, canvas, x, y, image_path):
         self.canvas = canvas
         self.x = x
@@ -9,7 +9,8 @@ class Image:
         self.image_id = self.canvas.create_image(self.x, self.y, image=self.image, anchor=tk.NW)
 
     def draw(self):
-        self.canvas.create_image(self.x, self.y, image=self.image, anchor=tk.NW)
+        if self.canvas.winfo_exists():
+            self.canvas.create_image(self.x, self.y, image=self.image, anchor=tk.NW)
 
     def move(self, x, y):
         self.x = x

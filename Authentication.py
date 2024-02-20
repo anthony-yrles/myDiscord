@@ -4,28 +4,42 @@ from User import User
 class Authentication:
     def __init__(self, client):
         self.client = client
+        
         self.user_list = []
+
+    def get_client(self):
+        return self.client
+    def set_client(self, new_client):
+        self.client = new_client
 
     def authenticate(self, mail, password):
         self.client.send_data('READ_TABLE_USER','')
         user_data_json = self.client.receive_data(1024)
         user_data_list = json.loads(user_data_json)
-        print(user_data_list)
         if user_data_list:
             for user_data in user_data_list:
-                user_id, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
+                name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
                 if user_mail == mail and user_password == password:
                     user = User(name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
                     if user not in self.user_list:
                         self.user_list.append(user)
-                    return user
+                    return True, user
         return False
     
+    def password_enter(password):
+        autorized_Special_Char = "!@#$%^&*"
+        if len(password) < 8 or not any(char.isupper() for char in password) or not any(char.islower() for char in password) or not any(char in autorized_Special_Char for char in password) or not any(char.isdigit() for char in password):
+            return False
+        return True
+    
     def create_account(self, name, surname, mail, password):
-        params = name, surname, mail, password
-        self.client.send_data('CREATE_USER', params)
-        # user_data_json = self.client.receive_data(1024)
-        # user_data_list = json.loads(user_data_json)
+        if self.password_enter(password):
+            params = name, surname, mail, password
+            self.client.send_data('CREATE_USER', params)
+        
+            # user_data_json = self.client.receive_data(1024)
+            # user_data_list = json.loads(user_data_json)
+
         
     # def login(self):
     #     if self.authenticate():
