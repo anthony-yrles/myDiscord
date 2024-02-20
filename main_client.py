@@ -25,7 +25,6 @@ try:
 
         user_input = input("Press 'q' to quit: ")
         if user_input.lower() == 'q':
-            # client.close()
             break
 except Exception as e:
     print(f"Error: {e}")

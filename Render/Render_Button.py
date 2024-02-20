@@ -59,3 +59,13 @@ class Button(Image):
             tuple: The width and height of the button.
         """
         return Image.get_size(self)
+    
+    def place(self, x, y):
+        """
+        Places the button on the canvas.
+
+        Args:
+            x (int): The x-coordinate of the button's position.
+            y (int): The y-coordinate of the button's position.
+        """
+        self.canvas.coords(self.image_id, x, y)

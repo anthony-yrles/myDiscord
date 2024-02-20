@@ -1,9 +1,11 @@
 import tkinter as tk
+from tkinter import Label
 from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
 from Authentication import Authentication
 from socket_client.Client import Client
+import json
 
 
 screen = tk.Tk()
@@ -56,8 +58,10 @@ def render_sign_in(event=None):
     
 def check_authenticate(mail, password):
     print("Clicked Log In Button")
-    if auth.authenticate(mail, password):
-        render_chat()
+    return_authenticate = auth.authenticate(mail, password)
+    if return_authenticate[0] == True:
+        user = return_authenticate[1]
+        render_chat(user)
     else:
         print("Authentication failed")
 
@@ -78,7 +82,6 @@ def render_log_in(event=None):
     real_log_in_button.bind('<Button-1>', lambda event: check_authenticate(entry5.get_value(), entry6.get_value()))
 
 
-
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
 
@@ -92,13 +95,16 @@ def render_log_in(event=None):
 
 
 
-def render_chat(event=None):
+
+def render_chat(user, event=None):
 
     for entry in custom_entries:
         entry.destroy_entry()
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
+
+
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
     # micro_button.bind('<Button-1>', render_chat)
@@ -119,6 +125,36 @@ def render_chat(event=None):
 
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     # gun_button.bind('<Button-1>', render_main_menu)
+
+    # room_group = user.get_list_room_group()
+    # valeur = room_group.split(":")
+    # variable_un = valeur[0]
+    # variable_deux = valeur[1]
+
+    room_group = user.get_list_room_group()
+    room_group_dict = json.loads(room_group)
+    print(f"Type of room_group: {type(room_group_dict)}")
+
+    room_button_list = []
+    room_labels = []
+
+    if isinstance(room_group_dict, dict):
+        i = 0  
+        for room_name, room_message in room_group_dict.items():
+            print(f"Room: {room_name}, Message: {room_message}")
+
+            room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/avatar_walid.png', None)
+            # room_button.bind('<Button-1>', render_main_menu)
+            room_button_list.append(room_button)
+
+            room_label = Label(primus_canvas, text=room_message)
+            room_label.place(x=60, y=60 + 50 * i )  
+            room_labels.append(room_label) 
+
+            i += 1
+
+    for button in room_button_list:
+        button.pack()
 
 
     screen.mainloop()
