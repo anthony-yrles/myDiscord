@@ -13,10 +13,10 @@ server est une instance de Server qui prend en paramètre server_address, host, 
 
 host = "127.0.0.1"
 user = "root"
-password = "SKenan30mg/"  
+password = "rootequipe7+"  
 database = "mydiscord"
 
-server = Server('10.10.81.131', 8080, 5, host, user, password, database)
+server = Server('10.10.82.175', 8080, 5, host, user, password, database)
 
 try:
     while True:
