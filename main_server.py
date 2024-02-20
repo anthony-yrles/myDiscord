@@ -16,13 +16,15 @@ user = "root"
 password = "rootequipe7+"  
 database = "mydiscord"
 
-server = Server('10.10.82.175', 8080, 5, host, user, password, database)
+address = '10.10.83.242'
+port = 8080
+server = Server('10.10.83.242', 8080, 5, host, user, password, database)
 # server = Server('127.0.0.1', 8080, 5, host, user, password, database)
 
 try:
     while True:
         client_socket, client_address = server.accept_client()        
-        server.handle_client_request(client_socket)
+        server.start_server('10.10.83.242', 8080)
 
 except Exception as e:
     print(f"Error: {e}")
