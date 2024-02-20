@@ -1,7 +1,9 @@
 from Room import Room
+import json
 
 class User:
-    def __init__(self, name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
+    def __init__(self, client,name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
+        self.client = client
         self.name = name
         self.surname = surname
         self.mail = mail
@@ -91,11 +93,14 @@ class User:
         self.show_list_created_room()
         print("")
 
-    #create a new room
-    def create_room(self, name, list_modo, list_admin, list_user):
-        return Room(name, list_modo, list_admin, list_user)
+    def create_room(self,name, list_modo, list_admin, list_user):
+        params = name, list_modo, list_admin, list_user
+        self.client.send_data('CREATE_TEXT_ROOM', params)
+        # user_data_json = self.client.receive_data(1024)
+        # user_data_list = json.loads(user_data_json)
+        # room = Room(name, list_modo, list_admin, list_user)
+        # return room
 
-    #modify the room
     def modify_room(self, name, list_modo, list_admin, list_user):
         self.name = name
         self.list_modo = list_modo

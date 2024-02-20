@@ -30,7 +30,8 @@ class Server:
             'CREATE_MESSAGE' : self.create_message,
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
-            'MODIFY_REACTION_COUNT' : self.modify_reaction_count
+            'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
+            'CREATE_TEXT_ROOM' : self.create_text_room
             }
 
     def accept_client(self):
@@ -67,7 +68,12 @@ class Server:
 
     def create_message(self, hour, author, message_text, id_room):
         query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
-        params = (hour, author, message_text)
+        params = (hour, author, message_text, id_room)
+        self.db.executeQuery(query, params)
+
+    def create_text_room(self,name, list_modo = '[]', list_admin = '[]', list_user = '[]'):
+        query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
+        params = (name, list_modo, list_admin, list_user)
         self.db.executeQuery(query, params)
 
     def delete_message(self, id):
