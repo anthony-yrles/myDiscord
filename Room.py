@@ -20,7 +20,7 @@ class Room:
     #getter and setter for list_admin
     def get_list_admin(self):
         return self.list_admin
-    def set_list_admin(self, list_admin):
+    def set_list_admin(self, list_admin): 
         self.list_admin = list_admin
 
     #getter and setter for list_user

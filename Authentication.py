@@ -17,7 +17,7 @@ class Authentication:
                     user = User(name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
                     if user not in self.user_list:
                         self.user_list.append(user)
-                    return True
+                    return True, user
         return False
     
     def create_account(self, name, surname, mail, password):
