@@ -71,7 +71,7 @@ class Server:
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
 
-    def create_text_room(self,name, list_modo = '[]', list_admin = '[]', list_user = '[]'):
+    def create_text_room(self, name, list_modo = '[]', list_admin = '[]', list_user = '[]'):
         query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
         params = (name, list_modo, list_admin, list_user)
         self.db.executeQuery(query, params)
@@ -92,7 +92,9 @@ class Server:
         self.db.executeQuery(query, params)
 
     def handle_client_request(self, client_socket):
+        print("test")
         client_data_received = client_socket.recv(1024).decode()
+        print(client_data_received)
         request_data = json.loads(client_data_received)
     
         method_name = request_data['method']
@@ -104,6 +106,23 @@ class Server:
             self.send_data(client_socket, result)
         else:
             self.send_data("Command not recognized")
+
+    def start_server(self, address, port):
+        self.server_socket.bind(address, port)
+        print('test 2')
+        self.server_socket.listen(5)
+        print('test 3')
+        print("Server listening on {}:{}".format(address, port))
+
+        while True:  # Boucle infinie pour accepter de nouvelles connexions
+            client_socket, address = self.server_socket.accept()
+            print("Accepted connection from {}".format(address))
+            
+            # Gérer la requête du client
+            self.handle_client_request(client_socket)
+
+            # Fermer la connexion avec le client
+            client_socket.close()        
 
     # def create_user(self, username, password):
     #     query = "INSERT INTO user_table (username, password) VALUES (%s, %s)"
