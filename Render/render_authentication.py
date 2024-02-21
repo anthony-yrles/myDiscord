@@ -5,6 +5,7 @@ from Render.Render_Button import Button
 from Render.Entry import CustomEntry
 from Authentication import Authentication
 from socket_client.Client import Client
+import json
 
 
 screen = tk.Tk()
@@ -15,7 +16,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('127.0.0.1', 8080)
+client.connect_to_server('10.10.84.250', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -92,7 +93,7 @@ def render_log_in(event=None):
 def render_create_room(user, event=None):
 
     
-    user.create_room("Room 1", ["Modo 1", "Modo 2"], ["Admin 1", "Admin 2"], ["User 1", "User 2"])
+    user.create_room("Room 1")
 
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
     second_canvas.pack()
@@ -151,14 +152,13 @@ def render_chat(user, event=None):
 
     room_group = user.get_list_room_group()
     room_group_dict = json.loads(room_group)
-    print(f"Type of room_group: {type(room_group_dict)}")
 
     room_button_list = []
     room_labels = []
 
-    if isinstance(fusion_list, dict):
+    if isinstance(room_group_dict, dict):
         i = 0  
-        for room_name, room_message in fusion_list.items():
+        for room_name, room_message in room_group_dict.items():
             print(f"Room: {room_name}, Message: {room_message}")
 
             room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
