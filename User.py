@@ -99,10 +99,8 @@ class User:
     #     print("")
 
     def create_room(self,name, list_modo, list_admin, list_user):
-        print(f"Creating room '{name}'")
         params = name, list_modo, list_admin, list_user
         self.client.send_data('CREATE_TEXT_ROOM', params)
-        print(f"Room_12 created successfully.")
         # user_data_json = self.client.receive_data(1024)
         # user_data_list = json.loads(user_data_json)
         # room = Room(name, list_modo, list_admin, list_user)
