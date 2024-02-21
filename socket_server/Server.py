@@ -58,9 +58,15 @@ class Server:
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
 
-    def create_text_room(self, name, list_modo = '', list_admin = 'admin_1', list_user = ''):
-        query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
-        params = (name, list_modo, list_admin, list_user)
+    # def create_text_room(self, name, list_modo = '', list_admin = 'admin_1', list_user = ''):
+    #     query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
+    #     params = (name, list_modo, list_admin, list_user)
+    #     self.db.executeQuery(query, params)
+
+    def create_text_room(self, name, list_modo = '', list_admin = 'admin_1', list_user = 'user_1'):
+        query = f'INSERT INTO private_text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
+        print(name)
+        params = name, list_modo, list_admin, list_user
         self.db.executeQuery(query, params)
 
     def read_table_message(self):
