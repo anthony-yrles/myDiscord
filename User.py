@@ -52,10 +52,10 @@ class User:
     def set_list_created_room(self, list_created_room):
         self.list_created_room = list_created_room
 
-    def list_room_fusion(self):
-        fusion_list_romm = self.list_created_room + self.list_room_fusion + self.list_room_private
-        fusion_list = json.loads(fusion_list_romm)
-        return fusion_list
+    # def list_room_fusion(self):
+    #     fusion_list_romm = str(self.list_created_room) + str(self.list_room_fusion) + str(self.list_room_private)
+    #     fusion_list = json.loads(fusion_list_romm)
+    #     return fusion_list
 
     # def show_list_room(self):
     #     list_room = {

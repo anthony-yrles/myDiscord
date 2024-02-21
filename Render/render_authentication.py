@@ -14,7 +14,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.82.175', 8080)
+client.connect_to_server('127.0.0.1', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -115,7 +115,7 @@ def render_chat(user, event=None):
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     # gun_button.bind('<Button-1>', render_main_menu)
 
-    fusion_list = user.list_room_fusion
+    fusion_list = user.get_list_room_group()
 
     room_button_list = []
     room_labels = []
