@@ -175,9 +175,3 @@ def render_chat(user, event=None):
 
     screen.mainloop()
     primus_canvas.update()
-
-
-
-
-
-

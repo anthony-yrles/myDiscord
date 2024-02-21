@@ -92,20 +92,29 @@ class Server:
         self.db.executeQuery(query, params)
 
     def handle_client_request(self, client_socket):
-        print("test")
-        client_data_received = client_socket.recv(1024).decode()
-        print(client_data_received)
-        request_data = json.loads(client_data_received)
-    
-        method_name = request_data['method']
-        params = request_data['params']
-    
-        if method_name in self.query_dictionnary:
-            # Utiliser la méthode et les paramètres séparément
-            result = self.query_dictionnary[method_name](*params)
-            self.send_data(client_socket, result)
-        else:
-            self.send_data("Command not recognized")
+        try:
+            while True:
+                client_data_received = client_socket.recv(1024).decode()
+                print(client_data_received)
+                if not client_data_received:
+                    # Si la connexion est fermée côté client, sortir de la boucle
+                    break
+
+                request_data = json.loads(client_data_received)
+                method_name = request_data['method']
+                params = request_data['params']
+
+                if method_name in self.query_dictionnary:
+                    result = self.query_dictionnary[method_name](*params)
+                    self.send_data(client_socket, result)
+                else:
+                    self.send_data(client_socket, "Command not recognized")
+        except Exception as e:
+            print(f"Error handling client request: {e}")
+        finally:
+            # Assurez-vous de fermer la connexion à la fin du traitement
+            client_socket.close()
+
 
     def start_server(self, address, port):
         self.server_socket.bind(address, port)
