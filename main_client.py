@@ -22,7 +22,6 @@ try:
 
         state ()()
 
-
         user_input = input("Press 'q' to quit: ")
         if user_input.lower() == 'q':
             break

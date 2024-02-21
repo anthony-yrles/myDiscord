@@ -98,8 +98,8 @@ class User:
     #     self.show_list_created_room()
     #     print("")
 
-    def create_room(self,name, list_modo, list_admin, list_user):
-        params = name, list_modo, list_admin, list_user
+    def create_room(self,name):
+        params = name
         self.client.send_data('CREATE_TEXT_ROOM', params)
         # user_data_json = self.client.receive_data(1024)
         # user_data_list = json.loads(user_data_json)
