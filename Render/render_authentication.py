@@ -16,7 +16,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.83.242', 8080)
+client.connect_to_server('10.10.84.250', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -94,36 +94,47 @@ def render_log_in(event=None):
 
 
 def render_create_room(user, event=None):
-
-    
     user.create_room("Room 1", ["Modo 1", "Modo 2"], ["Admin 1", "Admin 2"], ["User 1", "User 2"])
 
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    second_canvas.pack()
+    second_canvas.pack(fill=tk.BOTH, expand=True)
     second_canvas.place(x=230, y=100)
 
-    # tk.Label(second_canvas, text_area, font=("Arial", 20), bg="lightblue").place(x=250, y=20)
-    # text_area = scrolledtext.ScrolledText(second_canvas, width=40, height=10, font=("Arial", 15)) 
-    # text_area.insert(tk.INSERT, 
-    # """\ 
-    # This is a scrolledtext widget to make tkinter text read only. 
-    # Hi 
-    # Geeks !!! 
-    # Geeks !!! 
-    # Geeks !!!  
-    # Geeks !!! 
-    # Geeks !!! 
-    # Geeks !!! 
-    # Geeks !!! 
-    # """) 
-    
-    # # Making the text read only 
-    # text_area.configure(state ='disabled') 
+    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+    text_area.insert(tk.INSERT, """\ 
+        This is a scrolledtext widget to make tkinter text read only. 
+        Hi 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!!  
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!!  
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!!  
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+        Geeks !!! 
+    """) 
+    text_area.configure(state ='disabled') 
 
-    # new_message = "A new message!"
-    # text_area.configure(state='normal')
-    # text_area.insert(tk.END, "\n" + new_message)
-    # text_area.configure(state='disabled')
+    new_message = "A new message!"
+    text_area.configure(state='normal')
+    text_area.insert(tk.END, "\n" + new_message)
+    text_area.configure(state='disabled')
+
+    text_area.pack(fill=tk.BOTH, expand=True)
+
 
 def render_chat(user, event=None):
 
@@ -169,7 +180,7 @@ def render_chat(user, event=None):
             # room_button.bind('<Button-1>', render_main_menu)
             room_button_list.append(room_button)
 
-            room_label = Label(primus_canvas, text=room_message)
+            room_label = Label(primus_canvas, text=room_message, bg="black", font=("arial", 15), fg="white")
             room_label.place(x=60, y=110 + 50 * i )  
             room_labels.append(room_label) 
             i += 1
