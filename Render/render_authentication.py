@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Label
+from tkinter import Label, scrolledtext
 from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
@@ -11,6 +11,7 @@ screen = tk.Tk()
 screen.title("Talk to me!")
 primus_canvas = tk.Canvas(screen, width=900, height=600)
 primus_canvas.pack()
+
 
 custom_entries = []
 client = Client()
@@ -87,6 +88,39 @@ def render_log_in(event=None):
     screen.mainloop()
     primus_canvas.update()
 
+
+def render_create_room(user, event=None):
+
+    
+    user.create_room("Room 1", ["Modo 1", "Modo 2"], ["Admin 1", "Admin 2"], ["User 1", "User 2"])
+
+    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+    second_canvas.pack()
+    second_canvas.place(x=230, y=100)
+
+    # tk.Label(second_canvas, text_area, font=("Arial", 20), bg="lightblue").place(x=250, y=20)
+    # text_area = scrolledtext.ScrolledText(second_canvas, width=40, height=10, font=("Arial", 15)) 
+    # text_area.insert(tk.INSERT, 
+    # """\ 
+    # This is a scrolledtext widget to make tkinter text read only. 
+    # Hi 
+    # Geeks !!! 
+    # Geeks !!! 
+    # Geeks !!!  
+    # Geeks !!! 
+    # Geeks !!! 
+    # Geeks !!! 
+    # Geeks !!! 
+    # """) 
+    
+    # # Making the text read only 
+    # text_area.configure(state ='disabled') 
+
+    # new_message = "A new message!"
+    # text_area.configure(state='normal')
+    # text_area.insert(tk.END, "\n" + new_message)
+    # text_area.configure(state='disabled')
+
 def render_chat(user, event=None):
 
     for entry in custom_entries:
@@ -104,7 +138,7 @@ def render_chat(user, event=None):
     # setting_button.bind('<Button-1>', render_main_menu)
 
     add_chat_button = Button(primus_canvas, 135, 30, './assets/add_chat_button.png', None)
-    # add_chat_button.bind('<Button-1>', render_main_menu)
+    add_chat_button.bind('<Button-1>', lambda event: render_create_room(user, event))
 
     delete_button = Button(primus_canvas, 750, 40, './assets/delete_button.png', None)
     # delete_button.bind('<Button-1>', render_main_menu)
@@ -115,7 +149,9 @@ def render_chat(user, event=None):
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     # gun_button.bind('<Button-1>', render_main_menu)
 
-    fusion_list = user.get_list_room_group()
+    room_group = user.get_list_room_group()
+    room_group_dict = json.loads(room_group)
+    print(f"Type of room_group: {type(room_group_dict)}")
 
     room_button_list = []
     room_labels = []
@@ -125,19 +161,17 @@ def render_chat(user, event=None):
         for room_name, room_message in fusion_list.items():
             print(f"Room: {room_name}, Message: {room_message}")
 
-            room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/avatar_walid.png', None)
+            room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
             # room_button.bind('<Button-1>', render_main_menu)
             room_button_list.append(room_button)
 
             room_label = Label(primus_canvas, text=room_message)
-            room_label.place(x=60, y=60 + 50 * i )  
+            room_label.place(x=60, y=110 + 50 * i )  
             room_labels.append(room_label) 
-
             i += 1
 
     for button in room_button_list:
-        button.pack()
-
+        button.bind('<Button-1>', None)
 
     screen.mainloop()
     primus_canvas.update()

@@ -20,7 +20,7 @@ class Authentication:
             for user_data in user_data_list:
                 id_name, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
                 if user_mail == mail and user_password == password:
-                    user = User(name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
+                    user = User(self.client, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
                     if user not in self.user_list:
                         self.user_list.append(user)
                     return True, user
