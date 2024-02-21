@@ -33,9 +33,9 @@ class Authentication:
         return True
     
     def create_account(self, name, surname, mail, password):
-        if self.password_enter(password):
-            params = name, surname, mail, password
-            self.client.send_data('CREATE_USER', params)
+        # if self.password_enter(password):
+        params = name, surname, mail, password
+        self.client.send_data('CREATE_USER', params)
         
             # user_data_json = self.client.receive_data(1024)
             # user_data_list = json.loads(user_data_json)

@@ -58,6 +58,11 @@ class Server:
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
 
+    def create_text_room(self, name, list_modo = '', list_admin = 'admin_1', list_user = ''):
+        query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
+        params = (name, list_modo, list_admin, list_user)
+        self.db.executeQuery(query, params)
+
     def read_table_message(self):
         query = f'SELECT * FROM message'
         return self.db.fetch(query, params=None)
@@ -71,10 +76,6 @@ class Server:
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
 
-    def create_text_room(self, name, list_modo = '[]', list_admin = '[]', list_user = '[]'):
-        query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
-        params = (name, list_modo, list_admin, list_user)
-        self.db.executeQuery(query, params)
 
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'
