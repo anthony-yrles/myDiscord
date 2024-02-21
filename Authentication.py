@@ -18,7 +18,7 @@ class Authentication:
         user_data_list = json.loads(user_data_json)
         if user_data_list:
             for user_data in user_data_list:
-                name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
+                id_name, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
                 if user_mail == mail and user_password == password:
                     user = User(self.client, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
                     if user not in self.user_list:
