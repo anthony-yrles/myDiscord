@@ -16,9 +16,9 @@ user = "root"
 password = "rootequipe7+"  
 database = "mydiscord"
 
-address = '10.10.83.242'
+address = '127.0.0.1'
 port = 8080
-server = Server('10.10.83.242', 8080, 5, host, user, password, database)
+server = Server('127.0.0.1', 8080, 5, host, user, password, database)
 # server = Server('127.0.0.1', 8080, 5, host, user, password, database)
 
 try:
