@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Label, scrolledtext
+from tkinter import Label, scrolledtext, simpledialog
 from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
@@ -93,8 +93,24 @@ def render_log_in(event=None):
     primus_canvas.update()
 
 
+room_button_list = []
+room_labels = []
+
+
 def render_create_room(user, event=None):
-    user.create_room("Room 1", ["Modo 1", "Modo 2"], ["Admin 1", "Admin 2"], ["User 1", "User 2"])
+    global room_button_list, room_labels
+    room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")
+
+    if room_name:
+        user.create_room(room_name, ["Modo 1", "Modo 2"], ["Admin 1", "Admin 2"], ["User 1", "User 2"])
+        
+        new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
+        new_room_button.bind('<Button-1>', None)
+        room_button_list.append(new_room_button)
+        
+        new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
+        new_room_label.place(x=60, y=110 + 40 * len(room_button_list))  
+        room_labels.append(new_room_label)
 
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
     second_canvas.pack(fill=tk.BOTH, expand=True)
@@ -137,6 +153,7 @@ def render_create_room(user, event=None):
 
 
 def render_chat(user, event=None):
+    global room_button_list, room_labels
 
     for entry in custom_entries:
         entry.destroy_entry()
@@ -168,8 +185,7 @@ def render_chat(user, event=None):
     room_group_dict = json.loads(room_group)
     print(f"Type of room_group: {type(room_group_dict)}")
 
-    room_button_list = []
-    room_labels = []
+
 
     if isinstance(room_group_dict, dict):
         i = 0  
