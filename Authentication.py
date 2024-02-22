@@ -37,8 +37,8 @@ class Authentication:
         params = name, surname, mail, password
         self.client.send_data('CREATE_USER', params)
         
-            # user_data_json = self.client.receive_data(1024)
-            # user_data_list = json.loads(user_data_json)
+        # user_data_json = self.client.receive_data(1024)
+        # user_data_list = json.loads(user_data_json)
 
         
     # def login(self):

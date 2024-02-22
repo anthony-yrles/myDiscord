@@ -16,7 +16,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('127.0.0.1', 8080)
+client.connect_to_server('10.10.86.234', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -98,7 +98,7 @@ def render_create_room(user, event=None):
     global room_button_list, room_labels
     room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
     if room_name:
-        user.create_room(room_name)
+        user.create_room(room_name, user.get_name())
         
         new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
         new_room_button.bind('<Button-1>', None)
@@ -185,7 +185,6 @@ def render_chat(user, event=None):
     if isinstance(room_group_dict, dict):
         i = 0  
         for room_name, room_message in room_group_dict.items():
-            print(f"Room: {room_name}, Message: {room_message}")
 
             room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
             # room_button.bind('<Button-1>', render_main_menu)
