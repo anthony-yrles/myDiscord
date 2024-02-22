@@ -32,7 +32,10 @@ class Server:
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
             'CREATE_TEXT_ROOM' : self.create_text_room,
-            'READ_TABLE_TEXT_ROOM' : self.read_table_text_room
+            'READ_TABLE_TEXT_ROOM' : self.read_table_text_room,
+            'ADD_ROOM_TO_LIST' : self.add_room_to_list,
+            'READ_ID_ROOM' : self.read_id_room,
+            'READ_NAME_ROOM' : self.read_name_room
             }
 
     def accept_client(self):
@@ -97,6 +100,20 @@ class Server:
         query = f'UPDATE message SET reaction_count_1 = %s, reaction_count_2 = %s WHERE id = %s'
         params = (reaction_count_1, reaction_count_2, id)
         self.db.executeQuery(query, params)
+    
+    def add_room_to_list(self, id_room, list_type):
+        query = f'INSERT INTO user VALUES (id_room) WHERE list_type = %s'
+        params = (id_room, list_type)
+        self.db.executeQuery(query, params)
+
+    def read_id_room(self):
+        query = f'SELECT id FROM room'
+        return self.db.fetch(query, params=None)
+    
+    def read_id_room(self, id_room):
+        query = f'SELECT name FROM room WHERE id_room = %s'
+        params = (id_room)
+        return self.db.fetch(query, params=None)
 
     def handle_client_request(self, client_socket):
         try:
