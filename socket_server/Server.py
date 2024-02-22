@@ -70,6 +70,9 @@ class Server:
         print(self.db.fetch(query, params=None))
         return self.db.fetch(query, params=None)
     
+
+
+
     def read_table_message(self):
         query = f'SELECT * FROM message'
         return self.db.fetch(query, params=None)

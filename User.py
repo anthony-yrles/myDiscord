@@ -119,3 +119,7 @@ class User:
     #             list_room.remove(room)
     #             return f"Room '{name}' deleted successfully."
     #     return f"No room found with the name '{name}'."
+
+        # def read_message(self, message_text):
+        #     params = (message_text,)
+        #     self.client.send_data('READ_TABLE_MESSAGE', params=None)

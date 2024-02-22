@@ -3,6 +3,7 @@ from tkinter import Label, scrolledtext, simpledialog
 from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
+from Render.Writting_message import Writting_message
 from Authentication import Authentication
 from socket_client.Client import Client
 import json
@@ -16,7 +17,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.86.234', 8080)
+client.connect_to_server('10.10.88.49', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -156,6 +157,9 @@ def render_chat(user, event=None):
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
+
+    enter_text = Writting_message(screen, "Write your message", x=260, y=490)    
+    custom_entries.append(enter_text)
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
     # micro_button.bind('<Button-1>', render_chat)
