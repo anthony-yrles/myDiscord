@@ -31,7 +31,8 @@ class Server:
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
-            'CREATE_TEXT_ROOM' : self.create_text_room
+            'CREATE_TEXT_ROOM' : self.create_text_room,
+            'READ_TABLE_TEXT_ROOM' : self.read_table_text_room
             }
 
     def accept_client(self):
@@ -58,20 +59,17 @@ class Server:
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
 
-    # def create_text_room(self, name, list_modo = '', list_admin = 'admin_1', list_user = ''):
-    #     query = f'INSERT INTO text_room (name, list_modo, list_admin, list_user) VALUES (%s, %s, %s, %s)'
-    #     params = (name, list_modo, list_admin, list_user)
-    #     self.db.executeQuery(query, params)
-
-    def create_text_room(self, name, list_admin, list_modo = 'test_1', list_user = 'test_2'):
+    def create_text_room(self, name, list_admin, list_modo = '', list_user = ''):
         query = f'INSERT INTO text_room (name, list_admin, list_modo,  list_user) VALUES (%s, %s, %s, %s)'
         params = name, list_admin, list_modo, list_user
         self.db.executeQuery(query, params)
-        query_return = f'SELECT * FROM text_room WHERE list_admin = %s'
-        params_return = (list_admin,)
-        return self.db.fetch(query_return, params_return)
-    
 
+    def read_table_text_room(self):
+        query = f'SELECT * FROM text_room'
+        print('test')
+        print(self.db.fetch(query, params=None))
+        return self.db.fetch(query, params=None)
+    
     def read_table_message(self):
         query = f'SELECT * FROM message'
         return self.db.fetch(query, params=None)
@@ -84,7 +82,6 @@ class Server:
         query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
-
 
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'
@@ -128,9 +125,7 @@ class Server:
 
     def start_server(self, address, port):
         self.server_socket.bind(address, port)
-        print('test 2')
         self.server_socket.listen(5)
-        print('test 3')
         print("Server listening on {}:{}".format(address, port))
 
         while True:  # Boucle infinie pour accepter de nouvelles connexions
