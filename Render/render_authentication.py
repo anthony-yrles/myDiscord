@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import Label, scrolledtext, simpledialog
+from tkinter import Label, simpledialog
 from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
+from Render.Render_message import MessageRenderer  
 from Authentication import Authentication
 from socket_client.Client import Client
 import json
@@ -16,8 +17,8 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.86.234', 8080)
-# client.connect_to_server('127.0.0.1', 8080)
+# client.connect_to_server('10.10.86.234', 8080)
+client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
 def render_main_menu():
@@ -93,59 +94,45 @@ def render_log_in(event=None):
 room_button_list = []
 room_labels = []
 
+# def show_message(self, hour, author, message_text):
+    # params = (hour, author, message_text)
+    # message = self.client.send_data('READ_TABLE_ROOM', params)
+    # user_data_json = self.client.receive_data(1024)
+    # user_data_list = json.loads(user_data_json)
+
+
+    
+    # second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+    # second_canvas.pack(fill=tk.BOTH, expand=True)
+    # second_canvas.place(x=230, y=100)
+
+    # text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+    # text_area.insert(tk.INSERT, message) 
+    # text_area.configure(state ='disabled') 
+
+    # new_message = "A new message!"
+    # text_area.configure(state='normal')
+    # text_area.insert(tk.END, "\n" + new_message)
+    # text_area.configure(state='disabled')
+
+    # text_area.pack(fill=tk.BOTH, expand=True)
+
+
 
 def render_create_room(user, event=None):
     global room_button_list, room_labels
-    room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
+    room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")   
     if room_name:
         user.create_room(room_name, user.get_name())
         
         new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
-        new_room_button.bind('<Button-1>', None)
+        new_room_button.bind('<Button-1>', lambda event, user=user, room_name=room_name: MessageRenderer.show_message(user, '12:00', '', 'A new message!hi'))
         room_button_list.append(new_room_button)
         
         new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
         new_room_label.place(x=60, y=110 + 40 * len(room_button_list))  
         room_labels.append(new_room_label)
 
-    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    second_canvas.pack(fill=tk.BOTH, expand=True)
-    second_canvas.place(x=230, y=100)
-
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
-    text_area.insert(tk.INSERT, """\ 
-        This is a scrolledtext widget to make tkinter text read only. 
-        Hi 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-    """) 
-    text_area.configure(state ='disabled') 
-
-    new_message = "A new message!"
-    text_area.configure(state='normal')
-    text_area.insert(tk.END, "\n" + new_message)
-    text_area.configure(state='disabled')
-
-    text_area.pack(fill=tk.BOTH, expand=True)
 
 
 def render_chat(user, event=None):
@@ -181,13 +168,12 @@ def render_chat(user, event=None):
     room_group_dict = json.loads(room_group)
 
 
-
     if isinstance(room_group_dict, dict):
         i = 0  
         for room_name, room_message in room_group_dict.items():
 
             room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
-            # room_button.bind('<Button-1>', render_main_menu)
+            room_button.bind('<Button-1>', MessageRenderer.show_message(user, room_name, 'A new message!hi'))
             room_button_list.append(room_button)
 
             room_label = Label(primus_canvas, text=room_message, bg="black", font=("arial", 15), fg="white")

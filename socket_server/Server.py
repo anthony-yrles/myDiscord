@@ -70,18 +70,28 @@ class Server:
         print(self.db.fetch(query, params=None))
         return self.db.fetch(query, params=None)
     
-    def read_table_message(self):
-        query = f'SELECT * FROM message'
-        return self.db.fetch(query, params=None)
+    # def read_table_message(self):
+    #     query = f'SELECT * FROM message'
+    #     return self.db.fetch(query, params=None)
+    
+    def read_table_message(self, params):
+        query = """ SELECT message.id, message.hour, message.author, message.message_text, message.id_room, text_room.id
+        FROM message
+        INNER JOIN text_room ON message.id_room = text_room.id
+        WHERE message.hour = %s AND message.author = %s AND message.message_text = %s
+        """
+        return self.db.fetch(query, params=params)
+    
+    def create_message(self, hour, author, message_text, id_room):
+        query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
 
+        params = (hour, author, message_text, id_room)
+        self.db.executeQuery(query, params)
+    
     def read_list_room_user(self):
         query = f'SELECT list_user FROM text_room'
         return self.db.fetch(query, params=None)
 
-    def create_message(self, hour, author, message_text, id_room):
-        query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
-        params = (hour, author, message_text, id_room)
-        self.db.executeQuery(query, params)
 
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'
