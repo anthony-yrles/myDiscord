@@ -57,10 +57,11 @@ class User:
     def read_id_room(self):
         self.client.send_data('READ_ID_ROOM','')
         id_room = self.client.receive_data(1024)
+        print(id_room)
         return id_room
     
     def read_name_room(self, id_room):
-        params = (id_room,)
+        params = [id_room]
         self.client.send_data('READ_NAME_ROOM', params)
         name_room = self.client.receive_data(1024)
         return name_room
@@ -74,7 +75,7 @@ class User:
     def create_room(self, name, admin_name):
         params = (name, admin_name)
         self.client.send_data('CREATE_TEXT_ROOM', params)
-        self.add_room_to_list('text_room')
+        # self.add_room_to_list('text_room')
 
     def modify_room(self, name, list_modo, list_admin, list_user):
         self.name = name

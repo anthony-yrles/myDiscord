@@ -16,7 +16,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.88.49', 8080)
+client.connect_to_server('10.10.89.102', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -180,6 +180,7 @@ def render_chat(user, event=None):
     room_group_id = user.get_list_room_group()
     room_group_name = user.read_name_room(room_group_id)
     room_group_dict = json.loads(room_group_name)
+    print(room_group_dict)
 
     if isinstance(room_group_dict, dict):
         i = 0  

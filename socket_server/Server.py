@@ -57,7 +57,7 @@ class Server:
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"room1": "bienvenue"}', list_created_room = '{}'):
+    def create_user(self, name, surname, mail, password, list_room_private = None, list_room_group = 1, list_created_room = None):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
@@ -107,13 +107,13 @@ class Server:
         self.db.executeQuery(query, params)
 
     def read_id_room(self):
-        query = f'SELECT id FROM room'
+        query = f'SELECT id FROM text_room'
         return self.db.fetch(query, params=None)
     
-    def read_id_room(self, id_room):
-        query = f'SELECT name FROM room WHERE id_room = %s'
-        params = (id_room)
-        return self.db.fetch(query, params=None)
+    def read_name_room(self, id_room):
+        query = f'SELECT name FROM text_room WHERE id = %s'
+        params = [id_room]
+        return self.db.fetch(query, params)
 
     def handle_client_request(self, client_socket):
         try:
