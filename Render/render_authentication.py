@@ -158,7 +158,7 @@ def render_chat(user, event=None):
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
 
-    enter_text = Writing_message(screen, "Write your message", x=260, y=490)    
+    enter_text = Writing_message(screen, "Write your message", x=260, y=491)    
     custom_entries.append(enter_text)
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
@@ -181,10 +181,10 @@ def render_chat(user, event=None):
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     # gun_button.bind('<Button-1>', render_main_menu)
 
-    room_group = user.get_list_room_group()
-    room_group_dict = json.loads(room_group)
-
-
+    room_group_id = user.get_list_room_group()
+    room_group_name = user.read_name_room(room_group_id)
+    room_group_dict = json.loads(room_group_name)
+    print(room_group_dict)
 
     if isinstance(room_group_dict, dict):
         i = 0  
