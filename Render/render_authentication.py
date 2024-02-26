@@ -16,7 +16,7 @@ primus_canvas.pack()
 
 custom_entries = []
 client = Client()
-client.connect_to_server('10.10.89.102', 8080)
+client.connect_to_server('10.10.92.120', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
