@@ -33,7 +33,10 @@ class Server:
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
             'CREATE_TEXT_ROOM' : self.create_text_room,
-            'READ_TABLE_TEXT_ROOM' : self.read_table_text_room
+            'READ_TABLE_TEXT_ROOM' : self.read_table_text_room,
+            'ADD_ROOM_TO_LIST' : self.add_room_to_list,
+            'READ_ID_ROOM' : self.read_id_room,
+            'READ_NAME_ROOM' : self.read_name_room
             }
 
     def accept_client(self):
@@ -60,7 +63,7 @@ class Server:
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"room1": "bienvenue"}', list_created_room = '{}'):
+    def create_user(self, name, surname, mail, password, list_room_private = None, list_room_group = 1, list_created_room = None):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
@@ -103,6 +106,20 @@ class Server:
         query = f'UPDATE message SET reaction_count_1 = %s, reaction_count_2 = %s WHERE id = %s'
         params = (reaction_count_1, reaction_count_2, id)
         self.db.executeQuery(query, params)
+    
+    def add_room_to_list(self, id_room, list_type):
+        query = f'INSERT INTO user VALUES (id_room) WHERE list_type = %s'
+        params = (id_room, list_type)
+        self.db.executeQuery(query, params)
+
+    def read_id_room(self):
+        query = f'SELECT id FROM text_room'
+        return self.db.fetch(query, params=None)
+    
+    def read_name_room(self, id_room):
+        query = f'SELECT name FROM text_room WHERE id = %s'
+        params = [id_room]
+        return self.db.fetch(query, params)
 
     def handle_client_request(self, client_socket):
         try:
