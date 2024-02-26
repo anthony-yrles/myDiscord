@@ -7,6 +7,7 @@ ainsi que l'adresse du server et une liste des clients
 from socket_server.Socket_server import Socket_server
 from socket_server.Db import Db
 import json
+import threading
 
 class Server:
 
@@ -36,7 +37,12 @@ class Server:
             }
 
     def accept_client(self):
-        return self.server_socket.accept_connection()
+        while True:
+            client_socket, client_address = self.server_socket.accept_connection()
+            # Créer un thread pour gérer la requête du client
+            client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
+            # Démarrer le thread
+            client_thread.start()
 
     def close(self):
         self.server_socket.close()
@@ -123,20 +129,20 @@ class Server:
             client_socket.close()
 
 
-    def start_server(self, address, port):
-        self.server_socket.bind(address, port)
-        self.server_socket.listen(5)
-        print("Server listening on {}:{}".format(address, port))
+    # def start_server(self, address, port):
+    #     self.server_socket.bind(address, port)
+    #     self.server_socket.listen(5)
+    #     print("Server listening on {}:{}".format(address, port))
 
-        while True:  # Boucle infinie pour accepter de nouvelles connexions
-            client_socket, address = self.server_socket.accept()
-            print("Accepted connection from {}".format(address))
+    #     while True:  # Boucle infinie pour accepter de nouvelles connexions
+    #         client_socket, address = self.server_socket.accept()
+    #         print("Accepted connection from {}".format(address))
             
-            # Gérer la requête du client
-            self.handle_client_request(client_socket)
+    #         # Gérer la requête du client
+    #         self.handle_client_request(client_socket)
 
-            # Fermer la connexion avec le client
-            client_socket.close()        
+    #         # Fermer la connexion avec le client
+    #         client_socket.close()        
 
     # def create_user(self, username, password):
     #     query = "INSERT INTO user_table (username, password) VALUES (%s, %s)"
