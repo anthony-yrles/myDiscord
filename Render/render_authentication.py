@@ -82,7 +82,6 @@ def render_log_in(event=None):
     real_log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button_2.png', None)
     real_log_in_button.bind('<Button-1>', lambda event: check_authenticate(entry5.get_value(), entry6.get_value()))
 
-
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
 
@@ -97,50 +96,16 @@ room_button_list = []
 room_labels = []
 
 
-def render_create_room(user, event=None):
-    global room_button_list, room_labels
-    room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
-    if room_name:
-        user.create_room(room_name, user.get_name())
-        
-        new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
-        new_room_button.bind('<Button-1>', None)
-        room_button_list.append(new_room_button)
-        
-        new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
-        new_room_label.place(x=60, y=110 + 40 * len(room_button_list))  
-        room_labels.append(new_room_label)
-
+def render_message_send(user, event=None):
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
     second_canvas.pack(fill=tk.BOTH, expand=True)
     second_canvas.place(x=230, y=100)
 
     text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
-    text_area.insert(tk.INSERT, """\ 
-        This is a scrolledtext widget to make tkinter text read only. 
-        Hi 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-    """) 
+    all_messages = user.read_message()
+    print("DEBUG: All Messages:", all_messages)
+    print("DEBUG: Type of All Messages:", type(all_messages))
+    text_area.insert(tk.INSERT, all_messages) 
     text_area.configure(state ='disabled') 
 
     new_message = "A new message!"
@@ -150,21 +115,37 @@ def render_create_room(user, event=None):
 
     text_area.pack(fill=tk.BOTH, expand=True)
 
+
+def render_create_room(user, event=None):
+    global room_button_list, room_labels
+    room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
+    if room_name:
+        user.create_room(room_name, user.get_name())
+        
+        new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
+        new_room_button.bind('<Button-1>', render_message_send(user))
+        room_button_list.append(new_room_button)
+        
+        new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
+        new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
+        room_labels.append(new_room_label)
+
+
 def render_create_message(user, event=None):
-    print("Test")
+    # print("Test")
     enter_text = Writing_message(screen, "", x=260, y=491)    
     message_entry.append([enter_text])
     enter_text.set_value("")
 
 def send_message(user, event=None):
-    print("Test2")
+    # print("Test2")
     author = user.get_name()
     message_text = message_entry[0][0].get_value()
     print(message_text)
     try:
-        id_room = 123
+        id_room = 1
         user.create_message(author, message_text, id_room)
-        print("Test3")
+        # print("Test3")
         message_entry[0][0].set_value("")
     except Exception as e:
         print(f"Error sending message: {e}")
@@ -205,9 +186,9 @@ def render_chat(user, event=None):
     gun_button.bind('<Button-1>', lambda event: send_message(user, event))
 
 
-    room_group_id = user.get_list_room_group()
-    room_group_name = user.read_name_room(room_group_id)
-    room_group_dict = json.loads(room_group_name)
+    room_group = user.get_list_room_group()
+    room_group_dict = json.loads(room_group)
+    print(f"Type of room_group: {type(room_group_dict)}")
     print(room_group_dict)
 
     if isinstance(room_group_dict, dict):
@@ -215,7 +196,7 @@ def render_chat(user, event=None):
         for room_name, room_message in room_group_dict.items():
 
             room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
-            # room_button.bind('<Button-1>', render_main_menu)
+            room_button.bind('<Button-1>', render_message_send(user))
             room_button_list.append(room_button)
 
             room_label = Label(primus_canvas, text=room_message, bg="black", font=("arial", 15), fg="white")

@@ -24,6 +24,7 @@ class Server:
         self.server_socket = Socket_server()
         self.server_socket.start(address, port, backlog)
         self.query_dictionnary = {
+            'READ_MESSAGE' : self.read_message,
             'READ_TABLE_USER' : self.read_table_user,
             'CREATE_USER' : self.create_user,
             'READ_TABLE_MESSAGE' : self.read_table_message,
@@ -125,6 +126,10 @@ class Server:
         query = f'SELECT name FROM text_room WHERE id = %s'
         params = [id_room]
         return self.db.fetch(query, params)
+    
+    def read_message(self):
+        query = f'SELECT message_text FROM message'
+        return self.db.fetch(query, params=None)
 
     def handle_client_request(self, client_socket):
         try:

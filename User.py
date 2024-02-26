@@ -91,9 +91,13 @@ class User:
     #             return f"Room '{name}' deleted successfully."
     #     return f"No room found with the name '{name}'."
 
-        # def read_message(self, message_text):
-        #     params = (message_text,)
-        #     self.client.send_data('READ_TABLE_MESSAGE', params=None)
+    def read_message(self):
+        # print(f'1: {params}')
+        self.client.send_data('READ_MESSAGE', '')
+        messages = self.client.receive_data(1024)
+        print(f'2: {messages}')
+        return messages
+
 
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
