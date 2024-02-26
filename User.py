@@ -84,6 +84,11 @@ class User:
         self.list_admin = list_admin
         self.list_user = list_user
 
+
+    def read_message(self, message_text):
+        params = (message_text,)
+        self.client.send_data('READ_TABLE_MESSAGE', params)
+
     # def delete_room(self, name, list_room):
     #     for room in list_room:
     #         if room.name == name:
@@ -91,9 +96,6 @@ class User:
     #             return f"Room '{name}' deleted successfully."
     #     return f"No room found with the name '{name}'."
 
-        # def read_message(self, message_text):
-        #     params = (message_text,)
-        #     self.client.send_data('READ_TABLE_MESSAGE', params=None)
 
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

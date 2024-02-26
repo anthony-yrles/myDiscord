@@ -29,6 +29,7 @@ class Server:
             'READ_TABLE_MESSAGE' : self.read_table_message,
             'READ_LIST_ROOM_USER' : self.read_list_room_user,
             'CREATE_NEW_MESSAGE' : self.create_new_message,
+            'READ_MESSAGE' : self.read_message,
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
@@ -63,7 +64,7 @@ class Server:
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def create_user(self, name, surname, mail, password, list_room_private = None, list_room_group = 1, list_created_room = None):
+    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
@@ -87,15 +88,14 @@ class Server:
         query = f'SELECT list_user FROM text_room'
         return self.db.fetch(query, params=None)
 
-
-
     def create_new_message(self, hour, author, message_text, id_room):
         query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
 
-
-
+    def read_message(self):
+        query = f'SELECT message_text FROM message'
+        return self.db.fetch(query, params=None)
 
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'

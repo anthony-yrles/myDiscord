@@ -162,7 +162,7 @@ def send_message(user, event=None):
     message_text = message_entry[0][0].get_value()
     print(message_text)
     try:
-        id_room = 123
+        id_room = 1
         user.create_message(author, message_text, id_room)
         print("Test3")
         message_entry[0][0].set_value("")
@@ -205,9 +205,9 @@ def render_chat(user, event=None):
     gun_button.bind('<Button-1>', lambda event: send_message(user, event))
 
 
-    room_group_id = user.get_list_room_group()
-    room_group_name = user.read_name_room(room_group_id)
-    room_group_dict = json.loads(room_group_name)
+    room_group = user.get_list_room_group()
+    room_group_dict = json.loads(room_group)
+    print(f"Type of room_group: {type(room_group_dict)}")
     print(room_group_dict)
 
     if isinstance(room_group_dict, dict):
