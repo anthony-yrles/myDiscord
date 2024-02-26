@@ -28,7 +28,7 @@ class Server:
             'CREATE_USER' : self.create_user,
             'READ_TABLE_MESSAGE' : self.read_table_message,
             'READ_LIST_ROOM_USER' : self.read_list_room_user,
-            'CREATE_MESSAGE' : self.create_message,
+            'CREATE_NEW_MESSAGE' : self.create_new_message,
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
@@ -78,7 +78,7 @@ class Server:
         print('test')
         print(self.db.fetch(query, params=None))
         return self.db.fetch(query, params=None)
-    
+
     def read_table_message(self):
         query = f'SELECT * FROM message'
         return self.db.fetch(query, params=None)
@@ -87,10 +87,15 @@ class Server:
         query = f'SELECT list_user FROM text_room'
         return self.db.fetch(query, params=None)
 
-    def create_message(self, hour, author, message_text, id_room):
-        query = f'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
+
+
+    def create_new_message(self, hour, author, message_text, id_room):
+        query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
+
+
+
 
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'

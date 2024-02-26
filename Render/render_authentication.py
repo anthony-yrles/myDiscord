@@ -3,8 +3,10 @@ from tkinter import Label, scrolledtext, simpledialog
 from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
+from Render.Writing_message import Writing_message
 from Authentication import Authentication
 from socket_client.Client import Client
+from datetime import datetime
 import json
 
 
@@ -15,8 +17,9 @@ primus_canvas.pack()
 
 
 custom_entries = []
+message_entry = []
 client = Client()
-client.connect_to_server('10.10.92.120', 8080)
+client.connect_to_server('10.10.93.158', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -147,15 +150,39 @@ def render_create_room(user, event=None):
 
     text_area.pack(fill=tk.BOTH, expand=True)
 
+def render_create_message(user, event=None):
+    print("Test")
+    enter_text = Writing_message(screen, "", x=260, y=491)    
+    message_entry.append([enter_text])
+    enter_text.set_value("")
+
+def send_message(user, event=None):
+    print("Test2")
+    author = user.get_name()
+    message_text = message_entry[0][0].get_value()
+    print(message_text)
+    try:
+        id_room = 123
+        user.create_message(author, message_text, id_room)
+        print("Test3")
+        message_entry[0][0].set_value("")
+    except Exception as e:
+        print(f"Error sending message: {e}")
+   
 
 def render_chat(user, event=None):
     global room_button_list, room_labels
-
+    
     for entry in custom_entries:
         entry.destroy_entry()
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
+ 
+    render_create_message(user)
+    
+    # enter_text = Writing_message(screen, "Write your message", x=260, y=491)    
+    # custom_entries.append(enter_text)
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
     # micro_button.bind('<Button-1>', render_chat)
@@ -175,7 +202,8 @@ def render_chat(user, event=None):
     # search_button.bind('<Button-1>', render_main_menu)
 
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
-    # gun_button.bind('<Button-1>', render_main_menu)
+    gun_button.bind('<Button-1>', lambda event: send_message(user, event))
+
 
     room_group_id = user.get_list_room_group()
     room_group_name = user.read_name_room(room_group_id)

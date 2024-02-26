@@ -1,4 +1,5 @@
 from Room import Room
+from datetime import datetime
 import json
 
 class User:
@@ -89,3 +90,12 @@ class User:
     #             list_room.remove(room)
     #             return f"Room '{name}' deleted successfully."
     #     return f"No room found with the name '{name}'."
+
+        # def read_message(self, message_text):
+        #     params = (message_text,)
+        #     self.client.send_data('READ_TABLE_MESSAGE', params=None)
+
+    def create_message(self, author, message_text, id_room):
+        hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        params = (hour, author, message_text, id_room)
+        self.client.send_data('CREATE_NEW_MESSAGE', params)
