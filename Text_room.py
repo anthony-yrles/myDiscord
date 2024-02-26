@@ -30,6 +30,7 @@ class Text_room(Room):
         
 
     def create_message(self, hour, author, message_text, id_room):
+        author = self.get_name()
         params = hour, author, message_text, id_room
         self.client.send_data('CREATE_MESSAGE', params)
         # user_data_json = self.client.receive_data(1024)

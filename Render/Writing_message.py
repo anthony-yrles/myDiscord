@@ -10,7 +10,7 @@ class Writing_message:
         self.frame.place(x=x, y=y)
 
         self.entry_var = StringVar()
-        self.text = tk.Text(self.frame, width=57, height=3, font=("Arial", 12), insertbackground="black", bg="black", fg="white", wrap="word", relief="flat")
+        self.text = tk.Text(self.frame, width=57, height=3, font=("Arial", 12), insertbackground="pink", bg="black", fg="white", wrap="word", relief="flat")
         self.text.insert(tk.END, default_text)
         self.text.bind('<FocusIn>', self.on_entry_click)
         self.text.pack()
@@ -22,6 +22,9 @@ class Writing_message:
 
     def get_value(self):
         return self.text.get("1.0", "end-1c")
+    def set_value(self, value):
+        self.text.delete("1.0", tk.END)
+        self.text.insert(tk.END, value)
     
     def get_frame(self):
         return self.frame

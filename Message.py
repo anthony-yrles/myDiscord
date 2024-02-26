@@ -45,7 +45,6 @@ class Message:
 
 
 
-
     def modify_message(self, new_message):
         params = new_message, self.id
         self.client.send_data('MODIFY_MESSAGE', params)
