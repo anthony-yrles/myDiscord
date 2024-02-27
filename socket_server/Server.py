@@ -19,6 +19,8 @@ class Server:
     close: Ferme le socket
     """
 
+    connected_clients = {"used_id": "connection_socket"}
+
     def __init__(self, address, port, backlog, host, user, password, database):
         self.db = Db(host, user, password, database)
         self.server_socket = Socket_server()
@@ -83,6 +85,7 @@ class Server:
         query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
+        # envoyer a tous les utilisateurs connectes dans le dictionnaire le message recu
 
     def read_message(self):
         query = f'SELECT message.hour, message.author, message.message_text FROM message JOIN text_room ON message.id_room = text_room.id'

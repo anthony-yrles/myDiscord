@@ -19,7 +19,7 @@ primus_canvas.pack()
 custom_entries = []
 message_entry = []
 client = Client()
-client.connect_to_server('10.10.94.198', 8080)
+client.connect_to_server('10.10.94.135', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -98,6 +98,7 @@ def render_log_in(event=None):
 room_button_list = []
 room_labels = []
 
+# THREAD qui fait tourner la boucle d'écoute des messages côté client 
 
 def render_message_send(user, event=None, id_room=None):
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
