@@ -94,7 +94,7 @@ class Server:
         self.db.executeQuery(query, params)
 
     def read_message(self):
-        query = f'SELECT message_text FROM message'
+        query = f'SELECT message.hour, message.author, message.message_text FROM message JOIN text_room ON message.id_room = text_room.id'
         return self.db.fetch(query, params=None)
 
     def delete_message(self, id):

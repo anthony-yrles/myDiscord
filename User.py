@@ -85,9 +85,12 @@ class User:
         self.list_user = list_user
 
 
-    def read_message(self, message_text):
-        params = (message_text,)
-        self.client.send_data('READ_TABLE_MESSAGE', params)
+    def read_message(self):
+        # print(f'1: {params}')
+        self.client.send_data('READ_MESSAGE','')
+        messages = self.client.receive_data(1024)
+        print(f'2: {messages}')
+        return messages
 
     # def delete_room(self, name, list_room):
     #     for room in list_room:
@@ -99,5 +102,6 @@ class User:
 
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(type(hour),"check le type mon pote")
         params = (hour, author, message_text, id_room)
         self.client.send_data('CREATE_NEW_MESSAGE', params)
