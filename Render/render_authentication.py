@@ -4,10 +4,10 @@ from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
 from Render.Writing_message import Writing_message
+from Render.brouillon import list_room
 from Authentication import Authentication
 from socket_client.Client import Client
-from datetime import datetime
-import json
+import time
 
 
 screen = tk.Tk()
@@ -103,61 +103,59 @@ def render_create_room(user, event=None):
     if room_name:
         user.create_room(room_name, user.get_name())
         
-        new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
-        new_room_button.bind('<Button-1>', None)
-        room_button_list.append(new_room_button)
+    #     new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
+    #     new_room_button.bind('<Button-1>', None)
+    #     room_button_list.append(new_room_button)
         
-        new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
-        new_room_label.place(x=60, y=110 + 40 * len(room_button_list))  
-        room_labels.append(new_room_label)
+    #     new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
+    #     new_room_label.place(x=60, y=110 + 40 * len(room_button_list))  
+    #     room_labels.append(new_room_label)
 
-    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    second_canvas.pack(fill=tk.BOTH, expand=True)
-    second_canvas.place(x=230, y=100)
+    # second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+    # second_canvas.pack(fill=tk.BOTH, expand=True)
+    # second_canvas.place(x=230, y=100)
 
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
-    text_area.insert(tk.INSERT, """\ 
-        This is a scrolledtext widget to make tkinter text read only. 
-        Hi 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!!  
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-        Geeks !!! 
-    """) 
-    text_area.configure(state ='disabled') 
+    # text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+    # text_area.insert(tk.INSERT, """\ 
+    #     This is a scrolledtext widget to make tkinter text read only. 
+    #     Hi 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!!  
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!!  
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!!  
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    #     Geeks !!! 
+    # """) 
+    # text_area.configure(state ='disabled') 
 
-    new_message = "A new message!"
-    text_area.configure(state='normal')
-    text_area.insert(tk.END, "\n" + new_message)
-    text_area.configure(state='disabled')
+    # new_message = "A new message!"
+    # text_area.configure(state='normal')
+    # text_area.insert(tk.END, "\n" + new_message)
+    # text_area.configure(state='disabled')
 
-    text_area.pack(fill=tk.BOTH, expand=True)
+    # text_area.pack(fill=tk.BOTH, expand=True)
 
 def render_create_message(user, event=None):
-    print("Test")
     enter_text = Writing_message(screen, "", x=260, y=491)    
     message_entry.append([enter_text])
     enter_text.set_value("")
 
 def send_message(user, event=None):
-    print("Test2")
     author = user.get_name()
     message_text = message_entry[0][0].get_value()
     print(message_text)
@@ -204,26 +202,10 @@ def render_chat(user, event=None):
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     gun_button.bind('<Button-1>', lambda event: send_message(user, event))
 
-    room_group = user.get_list_room_group()
-    room_group_dict = json.loads(room_group)
-    print(f"Type of room_group: {type(room_group_dict)}")
-    print(room_group_dict)
+    room_button_list, room_id_list = list_room(primus_canvas, user, room_button_list, room_labels, client.client_socket)
 
-    if isinstance(room_group_dict, dict):
-        i = 0  
-        for room_name, room_message in room_group_dict.items():
-
-            room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
-            # room_button.bind('<Button-1>', render_main_menu)
-            room_button_list.append(room_button)
-
-            room_label = Label(primus_canvas, text=room_message, bg="black", font=("arial", 15), fg="white")
-            room_label.place(x=60, y=110 + 50 * i )  
-            room_labels.append(room_label) 
-            i += 1
-
-    for button in room_button_list:
-        button.bind('<Button-1>', None)
+    for button, room_id in zip(room_button_list, room_id_list):
+        button.bind('<Button-1>', lambda event, id=room_id: button_click_callback(id))
 
     screen.mainloop()
     primus_canvas.update()
