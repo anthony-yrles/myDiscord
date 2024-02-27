@@ -97,18 +97,33 @@ room_button_list = []
 room_labels = []
 
 
-def render_message_send(user, event=None):
+def render_message_send(user, id_room, gun_button, event=None):
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
     second_canvas.pack(fill=tk.BOTH, expand=True)
     second_canvas.place(x=230, y=100)
 
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
-    all_messages = user.read_message()
+    gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
 
-    print("DEBUG: All Messages:", all_messages)
-    print("DEBUG: Type of All Messages:", type(all_messages))
-    text_area.insert(tk.INSERT, all_messages) 
+    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+    messages, room_ids = user.read_message()
+    print("DEBUG: All Messages:", messages)
+    print("DEBUG: Type of All Messages:", type(messages))
+    filtered_messages = [message for message, room_id in zip(messages, room_ids) if room_id == id_room]
+
+    print("DEBUG: Filtered Messages:", filtered_messages)
+
+    for message in filtered_messages:
+        text_area.insert(tk.INSERT, message) 
+
     text_area.configure(state ='disabled') 
+    text_area.pack(fill=tk.BOTH, expand=True)
+
+
+
+    # print("DEBUG: All Messages:", all_messages)
+    # print("DEBUG: Type of All Messages:", type(all_messages))
+    # text_area.insert(tk.INSERT, all_messages) 
+    # text_area.configure(state ='disabled') 
 
     # new_message = "A new message!"
     # text_area.configure(state='normal')
@@ -137,12 +152,11 @@ def render_create_message(user, event=None):
     message_entry.append([enter_text])
     enter_text.set_value("")
 
-def send_message(user, event=None):
+def send_message(user, id_room, event=None):
     author = user.get_name()
     message_text = message_entry[0][0].get_value()
     print(message_text)
     try:
-        id_room = 1
         user.create_message(author, message_text, id_room)
         print("Test3")
         message_entry[0][0].set_value("")
@@ -182,12 +196,12 @@ def render_chat(user, event=None):
     # search_button.bind('<Button-1>', render_main_menu)
 
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
-    gun_button.bind('<Button-1>', lambda event: send_message(user, event))
+    # gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
 
     room_button_list, room_id_list = list_room(primus_canvas, user, room_button_list, room_labels, client.client_socket)
 
-    for button, room_id in zip(room_button_list, room_id_list):
-        button.bind('<Button-1>', lambda event, id=room_id: button_click_callback(id))
+    for button, id_room in zip(room_button_list, room_id_list):
+        button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, id, gun_button, event))
 
     screen.mainloop()
     primus_canvas.update()

@@ -85,7 +85,7 @@ class Server:
         self.db.executeQuery(query, params)
 
     def read_message(self):
-        query = f'SELECT message.hour, message.author, message.message_text FROM message JOIN text_room ON message.id_room = text_room.id'
+        query = f'SELECT hour, author, message_text, id_room FROM message'
         return self.db.fetch(query, params=None)
 
     def delete_message(self, id):
@@ -93,8 +93,13 @@ class Server:
         params = (id,)
         self.db.executeQuery(query, params)
 
+    # def show_room_data(self, room_type):
+    #     query = f'SELECT * FROM {room_type}'
+    #     return self.db.fetch(query, params=None)
+
     def show_room_data(self, room_type):
         query = f'SELECT * FROM {room_type}'
+        
         return self.db.fetch(query, params=None)
 
     def modify_message(self, new_message, id):

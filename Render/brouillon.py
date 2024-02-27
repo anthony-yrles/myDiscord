@@ -15,7 +15,7 @@ def list_room(primus_canvas, user, room_button_list, room_labels, client):
     for room_name in room_name_list:
 
         room_button = Button(primus_canvas, 20, 100 + 50 * i, './assets/gun_button.png', None)
-        room_button_list.append(room_button)
+        room_button_list.append(room_button)       
 
         room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
         room_label.place(x=60, y=110 + 50 * i )  
