@@ -19,7 +19,7 @@ primus_canvas.pack()
 custom_entries = []
 message_entry = []
 client = Client()
-client.connect_to_server('10.10.93.158', 8080)
+client.connect_to_server('127.0.0.1', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -204,10 +204,9 @@ def render_chat(user, event=None):
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
     gun_button.bind('<Button-1>', lambda event: send_message(user, event))
 
-
-    room_group_id = user.get_list_room_group()
-    room_group_name = user.read_name_room(room_group_id)
-    room_group_dict = json.loads(room_group_name)
+    room_group = user.get_list_room_group()
+    room_group_dict = json.loads(room_group)
+    print(f"Type of room_group: {type(room_group_dict)}")
     print(room_group_dict)
 
     if isinstance(room_group_dict, dict):

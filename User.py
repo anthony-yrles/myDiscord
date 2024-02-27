@@ -55,47 +55,15 @@ class User:
     def set_list_created_room(self, list_created_room):
         self.list_created_room = list_created_room
 
-    def read_id_room(self):
-        self.client.send_data('READ_ID_ROOM','')
-        id_room = self.client.receive_data(1024)
-        print(id_room)
-        return id_room
-    
-    def read_name_room(self, id_room):
-        params = [id_room]
-        self.client.send_data('READ_NAME_ROOM', params)
-        name_room = self.client.receive_data(1024)
-        return name_room
-        
-    def add_room_to_list(self, list_type):
-        id_room = self.read_id_room()
-        params = (id_room, list_type)
-        self.client.send_data('ADD_ROOM_TO_LIST', params)
-        list_type.append(id_room)
-
     def create_room(self, name, admin_name):
         params = (name, admin_name)
         self.client.send_data('CREATE_TEXT_ROOM', params)
-        # self.add_room_to_list('text_room')
-
-    def modify_room(self, name, list_modo, list_admin, list_user):
-        self.name = name
-        self.list_modo = list_modo
-        self.list_admin = list_admin
-        self.list_user = list_user
-
-    # def delete_room(self, name, list_room):
-    #     for room in list_room:
-    #         if room.name == name:
-    #             list_room.remove(room)
-    #             return f"Room '{name}' deleted successfully."
-    #     return f"No room found with the name '{name}'."
-
-        # def read_message(self, message_text):
-        #     params = (message_text,)
-        #     self.client.send_data('READ_TABLE_MESSAGE', params=None)
 
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         params = (hour, author, message_text, id_room)
         self.client.send_data('CREATE_NEW_MESSAGE', params)
+
+    # def read_message(self, message_text):
+    #     params = (message_text,)
+    #     self.client.send_data('READ_TABLE_MESSAGE', params=None)
