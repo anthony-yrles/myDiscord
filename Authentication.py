@@ -24,7 +24,7 @@ class Authentication:
                     if user not in self.user_list:
                         self.user_list.append(user)
                     return True, user
-        return False
+        return False, None
     
     def password_enter(password):
         autorized_Special_Char = "!@#$%^&*"

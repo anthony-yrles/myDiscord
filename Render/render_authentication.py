@@ -60,8 +60,10 @@ def render_sign_in(event=None):
 def check_authenticate(mail, password):
     print("Clicked Log In Button")
     return_authenticate = auth.authenticate(mail, password)
+    print(return_authenticate)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
+        print(user.list_room_group)
         render_chat(user)
     else:
         print("Authentication failed")
@@ -97,7 +99,7 @@ room_button_list = []
 room_labels = []
 
 
-def render_message_send(user, event=None):
+def render_message_send(user, event=None, id_room=None):
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
     second_canvas.pack(fill=tk.BOTH, expand=True)
     second_canvas.place(x=230, y=100)
@@ -186,8 +188,8 @@ def render_chat(user, event=None):
 
     room_button_list, room_id_list = list_room(primus_canvas, user, room_button_list, room_labels, client.client_socket)
 
-    for button, room_id in zip(room_button_list, room_id_list):
-        button.bind('<Button-1>', lambda event, id=room_id: button_click_callback(id))
+    for button, id_room in zip(room_button_list, room_id_list):
+        button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, event, id_room))
 
     screen.mainloop()
     primus_canvas.update()
