@@ -58,9 +58,33 @@ class User:
     def create_room(self, name, admin_name):
         params = (name, admin_name)
         self.client.send_data('CREATE_TEXT_ROOM', params)
+        # self.add_room_to_list('text_room')
+
+    def modify_room(self, name, list_modo, list_admin, list_user):
+        self.name = name
+        self.list_modo = list_modo
+        self.list_admin = list_admin
+        self.list_user = list_user
+
+
+    def read_message(self):
+        # print(f'1: {params}')
+        self.client.send_data('READ_MESSAGE','')
+        messages = self.client.receive_data(1024)
+        print(f'2: {messages}')
+        return messages
+
+    # def delete_room(self, name, list_room):
+    #     for room in list_room:
+    #         if room.name == name:
+    #             list_room.remove(room)
+    #             return f"Room '{name}' deleted successfully."
+    #     return f"No room found with the name '{name}'."
+
 
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(type(hour),"check le type mon pote")
         params = (hour, author, message_text, id_room)
         self.client.send_data('CREATE_NEW_MESSAGE', params)
 
