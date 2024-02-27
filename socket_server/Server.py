@@ -34,6 +34,7 @@ class Server:
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
             'CREATE_TEXT_ROOM' : self.create_text_room,
+            'SHOW_ROOM_DATA' : self.show_room_data
             }
 
     def accept_client(self):
@@ -60,7 +61,6 @@ class Server:
         query = f'SELECT * FROM user'
         return self.db.fetch(query, params=None)
     
-    def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
     def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
         params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
@@ -92,6 +92,10 @@ class Server:
         query = f'DELETE FROM message WHERE id = %s'
         params = (id,)
         self.db.executeQuery(query, params)
+
+    def show_room_data(self, room_type):
+        query = f'SELECT * FROM {room_type}'
+        return self.db.fetch(query, params=None)
 
     def modify_message(self, new_message, id):
         query = f'UPDATE message SET message_text = %s WHERE id = %s'

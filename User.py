@@ -1,5 +1,6 @@
 from Room import Room
 from datetime import datetime
+from Text_room import Text_room
 import json
 
 class User:
@@ -73,6 +74,31 @@ class User:
         messages = self.client.receive_data(1024)
         print(f'2: {messages}')
         return messages
+
+    
+    def show_room_data(self, type_of_room, client):
+        params = (type_of_room,)
+        self.client.send_data('SHOW_ROOM_DATA', params)
+        user_data_json = self.client.receive_data(1024)
+        
+        try:
+            user_data_list = json.loads(user_data_json)
+        except json.JSONDecodeError:
+            print("Error decoding JSON data")
+            return False
+
+        room_list = []
+
+        if user_data_list:
+            for user_data in user_data_list:
+                id, name, list_admin, list_modo, list_user = user_data
+                text_room = Text_room(name, list_admin, list_modo, list_user, client)
+                room_list.append((id, text_room.get_name()))
+
+            return room_list
+        else:
+            return False
+
 
     # def delete_room(self, name, list_room):
     #     for room in list_room:

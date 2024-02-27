@@ -6,14 +6,7 @@ class Text_room(Room):
     def __init__(self, name, list_modo, list_admin, list_user, client):
         super().__init__(name, list_modo, list_admin, list_user)
         self.client = client
-        self.db_connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="rootequipe7+",
-            database="mydiscord"
-        )
-        self.cursor = self.db_connection.cursor()
-
+        
     def read_all_mess(self):
         self.client.send_data('READ_TABLE_MESSAGE','')
         user_data_json = self.client.receive_data(1024)
