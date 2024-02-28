@@ -75,8 +75,8 @@ class User:
         messages = json.loads(messages)
         room_ids = [message[3] for message in messages]
 
-        print(f'1: {room_ids}')
-        print(f'2: {messages}')
+        # print(f'1: {room_ids}')
+        # print(f'2: {messages}')
         return messages, room_ids
 
     
