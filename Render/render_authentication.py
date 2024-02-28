@@ -103,9 +103,9 @@ def render_message_send(user, id_room, gun_button, event=None):
     second_canvas.place(x=230, y=100)
 
     gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
-
     text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
     messages, room_ids = user.read_message()
+    
     dates = []
     authors = []
     texts = []
@@ -120,10 +120,10 @@ def render_message_send(user, id_room, gun_button, event=None):
 
 
     print("DEBUG: Filtered Messages:", filtered_messages)
+    for message, date, author, text in zip(messages, dates, authors, texts):
+        if message[3] == id_room:  # Vérifie si l'ID de la salle correspond à celui spécifié
+            text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
 
-    for date, author, text in zip(dates, authors, texts):
-        
-        text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n") 
 
 
     text_area.configure(state ='disabled') 
