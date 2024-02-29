@@ -15,19 +15,19 @@ screen.title("Talk to me!")
 primus_canvas = tk.Canvas(screen, width=900, height=600)
 primus_canvas.pack()
 
-
 custom_entries = []
 message_entry = []
 client = Client()
 auth = Authentication(client)
 
 def read_messages_loop():
-    client.connect_to_server('10.10.98.101', 8080)
     # client.connect_to_server('127.0.0.1', 8080)
+    client.connect_to_server('10.10.98.101', 8080)
     while True:
         # Read messages from the server
         data = client.receive_data(1024)
         if data:
+            # afficher les messages
             print("Received:", data)
         # time.sleep(1)
 
@@ -70,7 +70,9 @@ def check_authenticate(mail, password):
     return_authenticate = auth.authenticate(mail, password)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
-        threading.Thread(target=read_messages_loop).start()
+        client.connect_to_server('10.10.98.101', 8080)
+
+        # threading.Thread(target=read_messages_loop).start()
         render_chat(user)
     else:
         print("Authentication failed")
@@ -91,7 +93,6 @@ def render_log_in(event=None):
     real_log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button_2.png', None)
     real_log_in_button.bind('<Button-1>', lambda event: check_authenticate(entry5.get_value(), entry6.get_value()))
 
-
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
 
@@ -104,7 +105,6 @@ def render_log_in(event=None):
 
 room_button_list = []
 room_labels = []
-
 
 def render_message_send(user, event=None, id_room=None):
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")

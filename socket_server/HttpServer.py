@@ -27,6 +27,7 @@ class HttpServer(http.server.BaseHTTPRequestHandler):
 
             if method == 'READ_TABLE_USER':
                 response_data = Server().read_table_user(*params)
+                
             elif method == 'CREATE_USER':
                 response_data = Server().create_user(*params)
             else:

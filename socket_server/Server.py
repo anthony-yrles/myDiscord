@@ -42,13 +42,13 @@ class Server(metaclass=SingletonMeta):
 
 
     def run(server_class=http.server.HTTPServer, handler_class=HttpServer, port=8888):
-        server_address = ('10.10.98.101', port)
-        httpd = server_class(server_address, handler_class)
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            pass
-        httpd.server_close()
+            server_address = ('10.10.98.101', port)
+            httpd = server_class(server_address, handler_class)
+            try:
+                thread = threading.Thread(None, httpd.serve_forever)
+                thread.start()
+            except KeyboardInterrupt:
+                pass
 
     def accept_client(self):
         client_socket, client_address = self.server_socket.accept_connection()
@@ -56,6 +56,7 @@ class Server(metaclass=SingletonMeta):
         client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
         # Démarrer le thread
         client_thread.start()
+        client_thread.join()
 
     def close(self):
         self.server_socket.close()
