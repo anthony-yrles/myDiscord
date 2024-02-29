@@ -29,6 +29,7 @@ class Server:
             'READ_TABLE_MESSAGE' : self.read_table_message,
             'READ_LIST_ROOM_USER' : self.read_list_room_user,
             'CREATE_NEW_MESSAGE' : self.create_new_message,
+            'CREATE_NEW_VOCAL_MESSAGE': self.create_new_vocal_message,
             'READ_MESSAGE' : self.read_message,
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
@@ -84,6 +85,11 @@ class Server:
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
 
+    def create_new_vocal_message(self, hour, author, vocal_message, id_room):
+        query = 'INSERT INTO vocal_message (hour, author, message_vocal, id_room) VALUES (%s, %s, %s, %s)'
+        params = (hour, author, vocal_message, id_room)
+        self.db.executeQuery(query, params)
+
     def read_message(self):
         query = f'SELECT hour, author, message_text, id_room FROM message'
         return self.db.fetch(query, params=None)
@@ -115,7 +121,7 @@ class Server:
     def handle_client_request(self, client_socket):
         try:
             while True:
-                client_data_received = client_socket.recv(1024).decode()
+                client_data_received = client_socket.recv(1073741824).decode()
                 print(client_data_received)
                 if not client_data_received:
                     # Si la connexion est fermée côté client, sortir de la boucle
@@ -135,3 +141,26 @@ class Server:
         finally:
             # Assurez-vous de fermer la connexion à la fin du traitement
             client_socket.close()
+
+    # def handle_client_request(self, client_socket):
+    #     try:
+    #         while True:
+    #             client_data_received = client_socket.recv(1073741824).decode()
+    #             if not client_data_received:
+    #                 # Si la connexion est fermée côté client, sortir de la boucle
+    #                 break
+
+    #             request_data = json.loads(client_data_received)
+    #             method_name = request_data['method']
+    #             params = request_data['params']
+
+    #             if method_name in self.query_dictionnary:
+    #                 result = self.query_dictionnary[method_name](*params)
+    #                 self.send_data(client_socket, result)
+    #             else:
+    #                 self.send_data(client_socket, "Command not recognized")
+    #     except Exception as e:
+    #         print(f"Error handling client request: {e}")
+    #     finally:
+    #         # Assurez-vous de fermer la connexion à la fin du traitement
+    #         client_socket.close()

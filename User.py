@@ -4,8 +4,8 @@ from Text_room import Text_room
 import json
 
 class User:
-    def __init__(self, client,name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
-        self.client = client
+    def __init__(self, client, name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
+        self.client = client 
         self.name = name
         self.surname = surname
         self.mail = mail
@@ -117,6 +117,11 @@ class User:
         print(type(hour),"check le type mon pote")
         params = (hour, author, message_text, id_room)
         self.client.send_data('CREATE_NEW_MESSAGE', params)
+
+    def create_vocal_message(self, author, vocal_message, id_room):
+        hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        params = (hour, author, vocal_message, id_room)
+        self.client.send_data('CREATE_NEW_VOCAL_MESSAGE', params)
 
     # def read_message(self, message_text):
     #     params = (message_text,)

@@ -19,7 +19,7 @@ primus_canvas.pack()
 custom_entries = []
 message_entry = []
 client = Client()
-client.connect_to_server('10.10.96.156', 8080)
+client.connect_to_server('127.0.0.1', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
 
@@ -116,63 +116,15 @@ def render_message_send(user, id_room, gun_button, event=None):
 
     print("DEBUG: All Messages:", messages)
     print("DEBUG: Type of All Messages:", type(messages))
-    filtered_messages = [message[2] for message, room_id in zip(messages, room_ids) if room_id == id_room and isinstance(message, list)]
 
-
-    print("DEBUG: Filtered Messages:", filtered_messages)
     for message, date, author, text in zip(messages, dates, authors, texts):
-        if message[3] == id_room:  # Vérifie si l'ID de la salle correspond à celui spécifié
+        if message[3] == id_room:  
             text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
 
 
 
     text_area.configure(state ='disabled') 
     text_area.pack(fill=tk.BOTH, expand=True)
-
-# def render_message_send(user, id_room, gun_button, event=None):
-#     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-#     second_canvas.pack(fill=tk.BOTH, expand=True)
-#     second_canvas.place(x=230, y=100)
-    
-#     gun_button.bind('<Button-1>', lambda event: send_message(user, event))
-
-#     messages, room_ids = user.read_message()
-#     print("niquez vous", messages)
-#     dates = []
-#     authors = []
-#     texts = []
-
-#     dates = [message[0] for message in messages]
-#     authors = [message[1] for message in messages]
-#     texts = [message[2] for message in messages]
-
-#     filtered_messages = [message for message, room_id in zip(messages, room_ids) if room_id == id_room]
-#     text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
-    
-#     for message in messages:
-#         if len(message) == 3:  
-#             date, author, message_text = message
-#             dates.append(date)
-#             authors.append(author)
-#             texts.append(message_text)
-#         else:
-#             print("Error: Message format incorrect:", message)
-
-    # print("DEBUG: Dates:", dates)
-    # print("DEBUG: Authors:", authors)
-    # print("DEBUG: Texts:", texts)
-
-
-    # print("DEBUG: All Messages:", all_messages)
-    # print("DEBUG: Type of All Messages:", type(all_messages))
-    # text_area.configure(state ='disabled') 
-
-    # new_message = "A new message!"
-    # text_area.configure(state='normal')
-    # text_area.insert(tk.END, "\n" + new_message)
-    # text_area.configure(state='disabled')
-
-
 
 
 def render_create_room(user, event=None):
@@ -206,7 +158,24 @@ def send_message(user, id_room, event=None):
         print(f"Error sending message: {e}")
    
 
+def render_vocal_chat(user, event=None):
+    print("Vocal Chat")
+    global room_button_list, room_labels
+    
+    render_create_room(user).destroy()
+
+    for entry in custom_entries:
+        entry.destroy_entry()
+
+    background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
+    background_image.draw()
+
+    message_button = Button(primus_canvas, 25, 540, './assets/message_button.png', None)
+    message_button.bind('<Button-1>', lambda event: render_chat(user, event))
+
+
 def render_chat(user, event=None):
+    print("Chat")
     global room_button_list, room_labels
     
     for entry in custom_entries:
@@ -217,11 +186,10 @@ def render_chat(user, event=None):
  
     render_create_message(user)
     
-    # enter_text = Writing_message(screen, "Write your message", x=260, y=491)    
-    # custom_entries.append(enter_text)
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
-    # micro_button.bind('<Button-1>', render_chat)
+    micro_button.bind('<Button-1>', lambda event: render_vocal_chat(user, event))
+
     message_button = Button(primus_canvas, 25, 540, './assets/message_button.png', None)
     # message_button.bind('<Button-1>', render_chat)
     

@@ -16,7 +16,7 @@ user = "root"
 password = "rootequipe7+"  
 database = "mydiscord"
 
-server = Server('10.10.96.156', 8080, 5, host, user, password, database)
+server = Server('127.0.0.1', 8080, 5, host, user, password, database)
 
 try:
     while True:
