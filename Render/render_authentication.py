@@ -19,9 +19,10 @@ primus_canvas.pack()
 custom_entries = []
 message_entry = []
 client = Client()
-client.connect_to_server('10.10.94.198', 8080)
+# client.connect_to_server('10.10.94.135', 8080)
 # client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
+
 
 def render_main_menu():
 
@@ -58,12 +59,9 @@ def render_sign_in(event=None):
     primus_canvas.update()
     
 def check_authenticate(mail, password):
-    print("Clicked Log In Button")
     return_authenticate = auth.authenticate(mail, password)
-    print(return_authenticate)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
-        print(user.list_room_group)
         render_chat(user)
     else:
         print("Authentication failed")

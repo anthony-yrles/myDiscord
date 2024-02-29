@@ -1,4 +1,5 @@
 import json
+import requests
 from User import User
 
 class Authentication:
@@ -13,17 +14,26 @@ class Authentication:
         self.client = new_client
 
     def authenticate(self, mail, password):
-        self.client.send_data('READ_TABLE_USER','')
-        user_data_json = self.client.receive_data(1024)
-        user_data_list = json.loads(user_data_json)
-        if user_data_list:
-            for user_data in user_data_list:
-                id_name, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room = user_data
-                if user_mail == mail and user_password == password:
-                    user = User(self.client, name, surname, user_mail, user_password, list_room_private, list_room_group, list_created_room)
-                    if user not in self.user_list:
-                        self.user_list.append(user)
-                    return True, user
+        data = {'method': ('READ_TABLE_USER'), 'params': (mail,)}
+        try:
+            user_data = requests.post('http://10.10.98.101:8888', json=data)
+            user_data.raise_for_status()
+            response_data = user_data.json()
+
+            # Assurez-vous que les données attendues sont présentes dans la réponse
+            if mail == response_data[0][3] and password == response_data[0][4]:
+                user = User(self.client, response_data[0][1], response_data[0][2], response_data[0][3], response_data[0][4], response_data[0][5], response_data[0][6], response_data[0][7])
+                return True, user
+
+        except requests.exceptions.HTTPError as http_err:
+            print(f'Erreur HTTP: {http_err}')
+
+        except requests.exceptions.JSONDecodeError as json_err:
+            print(f'Erreur de décodage JSON: {json_err}')
+
+        except Exception as err:
+            print(f'Erreur inattendue: {err}')
+
         return False, None
     
     def password_enter(password):
@@ -33,12 +43,10 @@ class Authentication:
         return True
     
     def create_account(self, name, surname, mail, password):
-        # if self.password_enter(password):
-        params = name, surname, mail, password
-        self.client.send_data('CREATE_USER', params)
-        
-        # user_data_json = self.client.receive_data(1024)
-        # user_data_list = json.loads(user_data_json)
+        data = {'method': ('CREATE_USER'), 'params': (name, surname, mail, password)}
+        user_data = requests.post('http://10.10.98.101:8888', json=data)
+        user_data.raise_for_status()
+
 
         
     # def login(self):

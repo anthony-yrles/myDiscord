@@ -5,11 +5,14 @@ ainsi que l'adresse du server et une liste des clients
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 from socket_server.Socket_server import Socket_server
+from socket_server.Singleton_Meta import SingletonMeta
 from socket_server.Db import Db
 import json
 import threading
+import http.server
+from .HttpServer import HttpServer
 
-class Server:
+class Server(metaclass=SingletonMeta):
 
     """
     Méthode utilisé:
@@ -37,13 +40,22 @@ class Server:
             'SHOW_ROOM_DATA' : self.show_room_data
             }
 
+
+    def run(server_class=http.server.HTTPServer, handler_class=HttpServer, port=8888):
+        server_address = ('10.10.98.101', port)
+        httpd = server_class(server_address, handler_class)
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        httpd.server_close()
+
     def accept_client(self):
-        while True:
-            client_socket, client_address = self.server_socket.accept_connection()
-            # Créer un thread pour gérer la requête du client
-            client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
-            # Démarrer le thread
-            client_thread.start()
+        client_socket, client_address = self.server_socket.accept_connection()
+        # Créer un thread pour gérer la requête du client
+        client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
+        # Démarrer le thread
+        client_thread.start()
 
     def close(self):
         self.server_socket.close()
@@ -56,10 +68,11 @@ class Server:
             client_socket.send(json_data.encode())
         except Exception as e:
             print(f"Error sending data: {e}")
-
-    def read_table_user(self):
-        query = f'SELECT * FROM user'
-        return self.db.fetch(query, params=None)
+    
+    def read_table_user(self, mail):
+        query = f'SELECT * FROM user WHERE mail = %s'
+        params = (mail,)
+        return self.db.fetch(query, params)
     
     def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
