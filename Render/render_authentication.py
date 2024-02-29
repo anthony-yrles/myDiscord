@@ -7,7 +7,7 @@ from Render.Writing_message import Writing_message
 from Render.brouillon import list_room
 from Authentication import Authentication
 from socket_client.Client import Client
-import time
+import threading
 
 
 screen = tk.Tk()
@@ -19,9 +19,17 @@ primus_canvas.pack()
 custom_entries = []
 message_entry = []
 client = Client()
-# client.connect_to_server('10.10.94.135', 8080)
-# client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
+
+def read_messages_loop():
+    client.connect_to_server('10.10.98.101', 8080)
+    # client.connect_to_server('127.0.0.1', 8080)
+    while True:
+        # Read messages from the server
+        data = client.receive_data(1024)
+        if data:
+            print("Received:", data)
+        # time.sleep(1)
 
 
 def render_main_menu():
@@ -62,6 +70,7 @@ def check_authenticate(mail, password):
     return_authenticate = auth.authenticate(mail, password)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
+        threading.Thread(target=read_messages_loop).start()
         render_chat(user)
     else:
         print("Authentication failed")
