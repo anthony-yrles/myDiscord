@@ -17,19 +17,23 @@ primus_canvas.pack()
 
 custom_entries = []
 message_entry = []
+area_message = []   
+received_messages = []
 client = Client()
 auth = Authentication(client)
+second_canvas = None
+text_area = None
 
-def read_messages_loop():
-    # client.connect_to_server('127.0.0.1', 8080)
-    client.connect_to_server('10.10.98.101', 8080)
+update_event = threading.Event()
+
+def read_messages_loop(second_canvas, text_area):
     while True:
-        # Read messages from the server
         data = client.receive_data(1024)
         if data:
-            # afficher les messages
-            print("Received:", data)
-        # time.sleep(1)
+            received_messages.append(data)
+            # Signaler au thread d'interface graphique de mettre à jour les messages
+            update_event.set()
+
 
 
 def render_main_menu():
@@ -70,9 +74,7 @@ def check_authenticate(mail, password):
     return_authenticate = auth.authenticate(mail, password)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
-        client.connect_to_server('10.10.98.101', 8080)
-
-        # threading.Thread(target=read_messages_loop).start()
+        client.connect_to_server('10.10.102.172', 8080)
         render_chat(user)
     else:
         print("Authentication failed")
@@ -106,26 +108,63 @@ def render_log_in(event=None):
 room_button_list = []
 room_labels = []
 
-def render_message_send(user, event=None, id_room=None):
-    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    second_canvas.pack(fill=tk.BOTH, expand=True)
-    second_canvas.place(x=230, y=100)
 
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
-    all_messages = user.read_message()
+def render_message_send(user, id_room, gun_button, event=None):
+    # on reçoit les messages et on les affiches 
+    global second_canvas, text_area
+    if second_canvas is None:
+        second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+        second_canvas.pack(fill=tk.BOTH, expand=True)
+        second_canvas.place(x=230, y=100)
 
-    print("DEBUG: All Messages:", all_messages)
-    print("DEBUG: Type of All Messages:", type(all_messages))
-    text_area.insert(tk.INSERT, all_messages) 
-    text_area.configure(state ='disabled') 
+    if text_area is None:
+        text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white")
+        text_area.configure(state ='disabled') 
+        text_area.pack(fill=tk.BOTH, expand=True)
+        
+        
+        gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
+        messages, room_ids = user.read_message()
+        
+        dates = []
+        authors = []
+        texts = []
 
-    # new_message = "A new message!"
-    # text_area.configure(state='normal')
-    # text_area.insert(tk.END, "\n" + new_message)
-    # text_area.configure(state='disabled')
+        dates = [message[0] for message in messages]
+        authors = [message[1] for message in messages]
+        texts = [message[2] for message in messages]
 
-    text_area.pack(fill=tk.BOTH, expand=True)
+        print("DEBUG: All Messages:", messages)
+        print("DEBUG: Type of All Messages:", type(messages))
 
+        threading.Thread(target=read_messages_loop, args=(second_canvas, text_area)).start()
+        # Lancer le rafraîchissement des messages
+        # refresh_messages(second_canvas, text_area)
+
+        for message, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
+            if room_id == id_room:
+                text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
+
+
+        text_area.configure(state ='disabled') 
+        text_area.pack(fill=tk.BOTH, expand=True)
+
+
+# def refresh_messages(second_canvas, text_area):
+#     global received_messages
+#     text_area.configure(state='normal')
+#     for message in received_messages:
+#         text_area.insert(tk.END, message + '\n')
+#         text_area.configure(state='disabled')
+#     # Réinitialiser l'event pour attendre la prochaine mise à jour
+#     update_event.clear()
+#     # Planifier le rafraîchissement toutes les 1000 millisecondes (1 seconde)
+#     second_canvas.after(1000, refresh_messages, second_canvas, text_area)
+
+# def update_messages():
+#     if update_event.is_set():
+#         refresh_messages(second_canvas, text_area)
+#     # screen.after(100, update_messages)
 
 def render_create_room(user, event=None):
     global room_button_list, room_labels
@@ -133,28 +172,32 @@ def render_create_room(user, event=None):
     if room_name:
         user.create_room(room_name, user.get_name())
         
-        new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
-        new_room_button.bind('<Button-1>', render_message_send(user))
-        room_button_list.append(new_room_button)
+        # new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
+        # new_room_button.bind('<Button-1>', render_message_send(user))
+        # room_button_list.append(new_room_button)
         
-        new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
-        new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
-        room_labels.append(new_room_label)
+        # new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
+        # new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
+        # room_labels.append(new_room_label)
 
 def render_create_message(user, event=None):
     enter_text = Writing_message(screen, "", x=260, y=491)    
     message_entry.append([enter_text])
+    area_message.extend([enter_text])
     enter_text.set_value("")
 
-def send_message(user, event=None):
+def send_message(user, id_room, event=None):
+    global received_messages
     author = user.get_name()
     message_text = message_entry[0][0].get_value()
     print(message_text)
     try:
-        id_room = 1
         user.create_message(author, message_text, id_room)
         print("Test3")
         message_entry[0][0].set_value("")
+        # Réinitialiser la liste des messages reçus
+        received_messages = []
+        # ici on sort jamais vraiment de la send_message donc on ne peut pas vraiment faire de render
     except Exception as e:
         print(f"Error sending message: {e}")
    
@@ -169,7 +212,7 @@ def render_chat(user, event=None):
     background_image.draw()
  
     render_create_message(user)
-    
+ 
     # enter_text = Writing_message(screen, "Write your message", x=260, y=491)    
     # custom_entries.append(enter_text)
 
@@ -191,12 +234,12 @@ def render_chat(user, event=None):
     # search_button.bind('<Button-1>', render_main_menu)
 
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
-    gun_button.bind('<Button-1>', lambda event: send_message(user, event))
 
     room_button_list, room_id_list = list_room(primus_canvas, user, room_button_list, room_labels, client.client_socket)
 
     for button, id_room in zip(room_button_list, room_id_list):
-        button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, event, id_room))
+        button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, id, gun_button, event))
 
+    # screen.after(100, update_messages)
     screen.mainloop()
     primus_canvas.update()

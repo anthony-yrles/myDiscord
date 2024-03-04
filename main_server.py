@@ -13,10 +13,11 @@ server est une instance de Server qui prend en paramètre server_address, host, 
 
 host = "127.0.0.1"
 user = "root"
-password = "SKenan30mg/"  
+password = "Vcassis13*"  
 database = "mydiscord"
 
-server = Server('10.10.98.101', 8080, 5, host, user, password, database)
+
+server = Server('10.10.102.172', 8080, 5, host, user, password, database)
 
 try:
     Server.run()

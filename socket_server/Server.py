@@ -22,6 +22,8 @@ class Server(metaclass=SingletonMeta):
     close: Ferme le socket
     """
 
+    client_connected = {}
+
     def __init__(self, address, port, backlog, host, user, password, database):
         self.db = Db(host, user, password, database)
         self.server_socket = Socket_server()
@@ -37,12 +39,12 @@ class Server(metaclass=SingletonMeta):
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
             'CREATE_TEXT_ROOM' : self.create_text_room,
-            'SHOW_ROOM_DATA' : self.show_room_data
+            'SHOW_ROOM_DATA' : self.show_room_data,
+            'BROADCAST_MESSAGE' : self.broadcast_message
             }
 
-
     def run(server_class=http.server.HTTPServer, handler_class=HttpServer, port=8888):
-            server_address = ('10.10.98.101', port)
+            server_address = ('10.10.102.172', port)
             httpd = server_class(server_address, handler_class)
             try:
                 thread = threading.Thread(None, httpd.serve_forever)
@@ -52,11 +54,15 @@ class Server(metaclass=SingletonMeta):
 
     def accept_client(self):
         client_socket, client_address = self.server_socket.accept_connection()
+
+        self.client_connected[client_address] = client_socket
+
+        print(f"Client {self.client_connected} connected")
         # Créer un thread pour gérer la requête du client
         client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
         # Démarrer le thread
         client_thread.start()
-        client_thread.join()
+        # client_thread.join()
 
     def close(self):
         self.server_socket.close()
@@ -97,9 +103,17 @@ class Server(metaclass=SingletonMeta):
         query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
+        self.send_message_to_all_clients(hour, author, message_text, id_room)
+    
+    def send_message_to_all_clients(self, hour, author, message_text, id_room):
+        new_message = {"hour": hour, "author": author, "message_text": message_text, "id_room": id_room}
+        for client in self.client_connected.values():
+            # Utilisez votre méthode d'envoi des données au client ici
+            client.send_data('NEW_MESSAGE', new_message)
+            print(f"{new_message} sent to {client}")
 
     def read_message(self):
-        query = f'SELECT message.hour, message.author, message.message_text FROM message JOIN text_room ON message.id_room = text_room.id'
+        query = f'SELECT hour, author, message_text, id_room FROM message'
         return self.db.fetch(query, params=None)
 
     def delete_message(self, id):
@@ -120,6 +134,24 @@ class Server(metaclass=SingletonMeta):
         query = f'UPDATE message SET reaction_count_1 = %s, reaction_count_2 = %s WHERE id = %s'
         params = (reaction_count_1, reaction_count_2, id)
         self.db.executeQuery(query, params)
+    
+    def broadcast_message(self, new_message, sender_socket):
+        try:
+            message_data = {"method": "CREATE_MESSAGE", "params": "hour, author, message_text, id_room"}
+            message_json = json.dumps(message_data)
+            print (f"Broadcasting message: {message_json}")
+            
+            # Diffuser le message à tous les autres clients
+            for client_key, client_socket in self.client_connected.items():
+                if client_socket != sender_socket:
+                    try:
+                        self.send_data(client_socket, message_json)
+                        print(f"Message broadcasted to {self.send_data}")
+                    except Exception as e:
+                        print(f"Error broadcasting message to {client_key}: {e}")
+
+        except Exception as e:
+            print(f"Error in broadcast_message: {e}")
 
     def handle_client_request(self, client_socket):
         try:
@@ -129,18 +161,20 @@ class Server(metaclass=SingletonMeta):
                 if not client_data_received:
                     # Si la connexion est fermée côté client, sortir de la boucle
                     break
-
                 request_data = json.loads(client_data_received)
                 method_name = request_data['method']
                 params = request_data['params']
-
+                
                 if method_name in self.query_dictionnary:
                     result = self.query_dictionnary[method_name](*params)
                     self.send_data(client_socket, result)
+                    self.broadcast_message(result, client_socket)
                 else:
                     self.send_data(client_socket, "Command not recognized")
+
         except Exception as e:
             print(f"Error handling client request: {e}")
         finally:
             # Assurez-vous de fermer la connexion à la fin du traitement
             client_socket.close()
+
