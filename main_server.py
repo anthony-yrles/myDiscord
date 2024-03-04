@@ -21,9 +21,7 @@ server = Server('10.10.102.172', 8080, 5, host, user, password, database)
 
 try:
     Server.run()
-    while True:
-        client_socket, client_address = server.accept_client()        
-        # server.handle_client_request(client_socket)
+    client_socket, client_address = server.accept_client()        
 
 except Exception as e:
     print(f"Error: {e}")

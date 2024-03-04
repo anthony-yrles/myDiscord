@@ -29,7 +29,7 @@ update_event = threading.Event()
 def read_messages_loop(second_canvas, text_area):
     while True:
         data = client.receive_data(1024)
-        if data:
+        if data :
             received_messages.append(data)
             # Signaler au thread d'interface graphique de mettre à jour les messages
             update_event.set()
@@ -139,7 +139,7 @@ def render_message_send(user, id_room, gun_button, event=None):
 
         threading.Thread(target=read_messages_loop, args=(second_canvas, text_area)).start()
         # Lancer le rafraîchissement des messages
-        # refresh_messages(second_canvas, text_area)
+        refresh_messages(second_canvas, text_area)
 
         for message, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
             if room_id == id_room:
@@ -150,21 +150,21 @@ def render_message_send(user, id_room, gun_button, event=None):
         text_area.pack(fill=tk.BOTH, expand=True)
 
 
-# def refresh_messages(second_canvas, text_area):
-#     global received_messages
-#     text_area.configure(state='normal')
-#     for message in received_messages:
-#         text_area.insert(tk.END, message + '\n')
-#         text_area.configure(state='disabled')
-#     # Réinitialiser l'event pour attendre la prochaine mise à jour
-#     update_event.clear()
-#     # Planifier le rafraîchissement toutes les 1000 millisecondes (1 seconde)
-#     second_canvas.after(1000, refresh_messages, second_canvas, text_area)
+def refresh_messages(second_canvas, text_area):
+    global received_messages
+    text_area.configure(state='normal')
+    for message in received_messages:
+        text_area.insert(tk.END, message + '\n')
+        text_area.configure(state='disabled')
+    # Réinitialiser l'event pour attendre la prochaine mise à jour
+    update_event.clear()
+    # Planifier le rafraîchissement toutes les 1000 millisecondes (1 seconde)
+    second_canvas.after(1000, refresh_messages, second_canvas, text_area)
 
-# def update_messages():
-#     if update_event.is_set():
-#         refresh_messages(second_canvas, text_area)
-#     # screen.after(100, update_messages)
+def update_messages():
+    if update_event.is_set():
+        refresh_messages(second_canvas, text_area)
+    # screen.after(100, update_messages)
 
 def render_create_room(user, event=None):
     global room_button_list, room_labels

@@ -10,6 +10,7 @@ from socket_server.Db import Db
 import json
 import threading
 import http.server
+from http.server import ThreadingHTTPServer
 from .HttpServer import HttpServer
 
 class Server(metaclass=SingletonMeta):
@@ -43,26 +44,33 @@ class Server(metaclass=SingletonMeta):
             'BROADCAST_MESSAGE' : self.broadcast_message
             }
 
-    def run(server_class=http.server.HTTPServer, handler_class=HttpServer, port=8888):
-            server_address = ('10.10.102.172', port)
-            httpd = server_class(server_address, handler_class)
-            try:
-                thread = threading.Thread(None, httpd.serve_forever)
-                thread.start()
-            except KeyboardInterrupt:
-                pass
+
+    
+
+
+        
+
+    def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
+        server_address = ('10.10.102.172', port)
+        httpd = server_class(server_address, handler_class)
+        try:
+            thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
+            thread.start()
+
+        except KeyboardInterrupt:
+            thread.join()
+            httpd.shutdown()
+
 
     def accept_client(self):
-        client_socket, client_address = self.server_socket.accept_connection()
-
-        self.client_connected[client_address] = client_socket
-
-        print(f"Client {self.client_connected} connected")
-        # Créer un thread pour gérer la requête du client
-        client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
-        # Démarrer le thread
-        client_thread.start()
-        # client_thread.join()
+        while True :
+            client_socket, client_address = self.server_socket.accept_connection()
+            self.client_connected[client_address] = client_socket
+            print(f"Client {self.client_connected} connected")
+            # Créer un thread pour gérer la requête du client
+            client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
+            client_thread.start()
+     
 
     def close(self):
         self.server_socket.close()
@@ -103,14 +111,8 @@ class Server(metaclass=SingletonMeta):
         query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
-        self.send_message_to_all_clients(hour, author, message_text, id_room)
+        # envoyer a tous les utilisateurs connectes dans le dictionnaire le message recu
     
-    def send_message_to_all_clients(self, hour, author, message_text, id_room):
-        new_message = {"hour": hour, "author": author, "message_text": message_text, "id_room": id_room}
-        for client in self.client_connected.values():
-            # Utilisez votre méthode d'envoi des données au client ici
-            client.send_data('NEW_MESSAGE', new_message)
-            print(f"{new_message} sent to {client}")
 
     def read_message(self):
         query = f'SELECT hour, author, message_text, id_room FROM message'
@@ -154,13 +156,16 @@ class Server(metaclass=SingletonMeta):
             print(f"Error in broadcast_message: {e}")
 
     def handle_client_request(self, client_socket):
+        iteration = 0
+        max_iterations = 100
         try:
-            while True:
+            while iteration < max_iterations :
                 client_data_received = client_socket.recv(1024).decode()
                 print(client_data_received)
                 if not client_data_received:
                     # Si la connexion est fermée côté client, sortir de la boucle
                     break
+                iteration += 1
                 request_data = json.loads(client_data_received)
                 method_name = request_data['method']
                 params = request_data['params']
@@ -171,6 +176,7 @@ class Server(metaclass=SingletonMeta):
                     self.broadcast_message(result, client_socket)
                 else:
                     self.send_data(client_socket, "Command not recognized")
+            
 
         except Exception as e:
             print(f"Error handling client request: {e}")
