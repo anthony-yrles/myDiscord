@@ -19,6 +19,7 @@ custom_entries = []
 message_entry = []
 area_message = []   
 received_messages = []
+displayed_messages = []
 client = Client()
 auth = Authentication(client)
 second_canvas = None
@@ -137,11 +138,12 @@ def render_message_send(user, id_room, gun_button, event=None):
         print("DEBUG: All Messages:", messages)
         print("DEBUG: Type of All Messages:", type(messages))
 
+
         threading.Thread(target=read_messages_loop, args=(second_canvas, text_area)).start()
         # Lancer le rafraîchissement des messages
         refresh_messages(second_canvas, text_area)
 
-        for message, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
+        for messages, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
             if room_id == id_room:
                 text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
 
@@ -151,20 +153,19 @@ def render_message_send(user, id_room, gun_button, event=None):
 
 
 def refresh_messages(second_canvas, text_area):
-    global received_messages
+    global received_messages, displayed_messages
     text_area.configure(state='normal')
     for message in received_messages:
-        text_area.insert(tk.END, message + '\n')
-        text_area.configure(state='disabled')
+        if message not in displayed_messages : 
+            text_area.insert(tk.END, message + '\n')
+            displayed_messages.append(message)
+            text_area.configure(state='disabled')
     # Réinitialiser l'event pour attendre la prochaine mise à jour
     update_event.clear()
     # Planifier le rafraîchissement toutes les 1000 millisecondes (1 seconde)
     second_canvas.after(1000, refresh_messages, second_canvas, text_area)
 
-def update_messages():
-    if update_event.is_set():
-        refresh_messages(second_canvas, text_area)
-    # screen.after(100, update_messages)
+
 
 def render_create_room(user, event=None):
     global room_button_list, room_labels
@@ -240,6 +241,5 @@ def render_chat(user, event=None):
     for button, id_room in zip(room_button_list, room_id_list):
         button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, id, gun_button, event))
 
-    # screen.after(100, update_messages)
     screen.mainloop()
     primus_canvas.update()

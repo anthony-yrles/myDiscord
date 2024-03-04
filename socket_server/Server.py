@@ -106,14 +106,18 @@ class Server(metaclass=SingletonMeta):
     def read_list_room_user(self):
         query = f'SELECT list_user FROM text_room'
         return self.db.fetch(query, params=None)
+    
+    def send_to_all_clients(self, message):
+        for client_socket in self.client_connected.values():
+            self.send_data(client_socket, message)
 
     def create_new_message(self, hour, author, message_text, id_room):
         query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
+        self.send_to_all_clients(params)
         # envoyer a tous les utilisateurs connectes dans le dictionnaire le message recu
     
-
     def read_message(self):
         query = f'SELECT hour, author, message_text, id_room FROM message'
         return self.db.fetch(query, params=None)
