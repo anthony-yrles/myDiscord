@@ -30,7 +30,7 @@ class Client:
         data = {'method': method, 'params': params}
         data_json = json.dumps(data)
         self.client_socket.send(data_json)
-
+ 
     def receive_data(self, buffer_size):
         return self.client_socket.receive(buffer_size)
 

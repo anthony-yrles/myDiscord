@@ -8,6 +8,7 @@ from socket_server.Socket_server import Socket_server
 from socket_server.Db import Db
 import json
 import threading
+import base64
 
 class Server:
 
@@ -31,10 +32,12 @@ class Server:
             'CREATE_NEW_MESSAGE' : self.create_new_message,
             'CREATE_NEW_VOCAL_MESSAGE': self.create_new_vocal_message,
             'READ_MESSAGE' : self.read_message,
+            'LISTEN_VOCAL' : self.listen_vocal,
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
             'MODIFY_REACTION_COUNT' : self.modify_reaction_count,
             'CREATE_TEXT_ROOM' : self.create_text_room,
+            'CREATE_VOCAL_ROOM' : self.create_vocal_room,
             'SHOW_ROOM_DATA' : self.show_room_data
             }
 
@@ -72,6 +75,11 @@ class Server:
         params = name, list_admin, list_modo, list_user
         self.db.executeQuery(query, params)
 
+    def create_vocal_room(self, name, list_admin, list_modo = '', list_user = ''):
+        query = f'INSERT INTO vocal_room (name, list_admin, list_modo,  list_user) VALUES (%s, %s, %s, %s)'
+        params = name, list_admin, list_modo, list_user
+        self.db.executeQuery(query, params)
+
     def read_table_message(self):
         query = f'SELECT * FROM message'
         return self.db.fetch(query, params=None)
@@ -85,14 +93,48 @@ class Server:
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
 
-    def create_new_vocal_message(self, hour, author, vocal_message, id_room):
+    def create_new_vocal_message(self, hour, author, message_vocal, id_room):
+        # message_vocal_json = json.dumps(message_vocal)
         query = 'INSERT INTO vocal_message (hour, author, message_vocal, id_room) VALUES (%s, %s, %s, %s)'
-        params = (hour, author, vocal_message, id_room)
-        self.db.executeQuery(query, params)
+        params = (hour, author, message_vocal, id_room)
+        try:
+            self.db.executeQuery(query, params)
+            print("Query executed")
+        except Exception as e:
+            print("Error executing query:", e)
+    # def create_new_vocal_message(self, hour, author, message_vocal, id_room):
+    #     print('error')
+    #     query = 'INSERT INTO vocal_message (hour, author, message_vocal, id_room) VALUES (%s, %s, %s, %s)'
+    #     print('error1')
+    #     params = (hour, author, message_vocal, id_room)
+    #     print('error2')
+    #     try:
+    #         print('error3')
+    #         self.db.executeQuery(query, params)
+    #         print("Query executed")
+    #     except Exception as e:
+    #         print("Error executing query:", e)
+
 
     def read_message(self):
         query = f'SELECT hour, author, message_text, id_room FROM message'
         return self.db.fetch(query, params=None)
+
+    def listen_vocal(self):
+        query = f'SELECT hour, author, message_vocal, id_room FROM vocal_message'
+        return self.db.fetch(query, params=None)
+
+    # def listen_vocal(self):
+    #     query = f'SELECT hour, author, message_vocal, id_room FROM vocal_message'
+    #     results = self.db.fetch(query, params=None)
+    #     vocal_messages = []
+    #     for vocal in results:
+    #         hour, author, message_vocal_json, id_room = vocal
+    #         message_vocal = json.loads(message_vocal_json)
+    #         vocal_messages.append((hour, author, message_vocal, id_room))
+    #     return vocal_messages
+
+
 
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'
@@ -124,7 +166,6 @@ class Server:
                 client_data_received = client_socket.recv(1073741824).decode()
                 print(client_data_received)
                 if not client_data_received:
-                    # Si la connexion est fermée côté client, sortir de la boucle
                     break
 
                 request_data = json.loads(client_data_received)
@@ -164,3 +205,6 @@ class Server:
     #     finally:
     #         # Assurez-vous de fermer la connexion à la fin du traitement
     #         client_socket.close()
+
+
+

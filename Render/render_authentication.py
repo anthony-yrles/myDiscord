@@ -7,8 +7,10 @@ from Render.Writing_message import Writing_message
 from Render.brouillon import list_room
 from Authentication import Authentication
 from socket_client.Client import Client
-import time
-
+import sounddevice as sd
+import tempfile
+from scipy.io.wavfile import write
+import numpy as np
 
 screen = tk.Tk()
 screen.title("Talk to me!")
@@ -17,6 +19,7 @@ primus_canvas.pack()
 
 
 custom_entries = []
+area_message = []
 message_entry = []
 client = Client()
 client.connect_to_server('127.0.0.1', 8080)
@@ -144,6 +147,7 @@ def render_create_room(user, event=None):
 def render_create_message(user, event=None):
     enter_text = Writing_message(screen, "", x=260, y=491)    
     message_entry.append([enter_text])
+    area_message.extend([enter_text])
     enter_text.set_value("")
 
 def send_message(user, id_room, event=None):
@@ -158,28 +162,17 @@ def send_message(user, id_room, event=None):
         print(f"Error sending message: {e}")
    
 
-def render_vocal_chat(user, event=None):
-    print("Vocal Chat")
-    global room_button_list, room_labels
-    
-    render_create_room(user).destroy()
-
-    for entry in custom_entries:
-        entry.destroy_entry()
-
-    background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
-    background_image.draw()
-
-    message_button = Button(primus_canvas, 25, 540, './assets/message_button.png', None)
-    message_button.bind('<Button-1>', lambda event: render_chat(user, event))
 
 
 def render_chat(user, event=None):
     print("Chat")
     global room_button_list, room_labels
+    type_room = 'text_room'
     
     for entry in custom_entries:
         entry.destroy_entry()
+    for label in room_labels:
+        label.destroy()
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
@@ -206,12 +199,104 @@ def render_chat(user, event=None):
     # search_button.bind('<Button-1>', render_main_menu)
 
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
-    # gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
 
-    room_button_list, room_id_list = list_room(primus_canvas, user, room_button_list, room_labels, client.client_socket)
+    room_button_list, room_id_list = list_room(primus_canvas, user, room_button_list, room_labels, type_room,  client.client_socket)
 
     for button, id_room in zip(room_button_list, room_id_list):
         button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, id, gun_button, event))
 
     screen.mainloop()
     primus_canvas.update()
+
+
+
+vocal_room_button_list = []
+vocal_room_id_list = []
+def render_vocal_chat(user, event=None):
+    global room_labels, area_message, vocal_room_button_list, vocal_room_id_list
+    print("Vocal Chat")
+    type_room = 'vocal_room'
+
+    for enter_text in area_message:
+        enter_text.destroy_entry()
+
+    for label in room_labels:
+        label.destroy()
+
+    background_vocal = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
+    background_vocal.draw()
+
+    micro_button2 = Button(primus_canvas, 80, 535, './assets/micro_button2.png', None)
+   
+    message_button2 = Button(primus_canvas, 25, 540, './assets/message_button2.png', None)
+    message_button2.bind('<Button-1>', lambda event: render_chat(user, event))
+
+    setting_button2 = Button(primus_canvas, 130, 535, './assets/setting_button2.png', None)
+    # setting_button.bind('<Button-1>', render_main_menu)
+
+    add_chat_button2 = Button(primus_canvas, 135, 30, './assets/add_chat_button2.png', None)
+    add_chat_button2.bind('<Button-1>', lambda event: render_create_vocal_room(user, event))
+
+    delete_button2 = Button(primus_canvas, 750, 40, './assets/delete_button2.png', None)
+    # delete_button.bind('<Button-1>', render_main_menu)
+
+    gun_button2 = Button(primus_canvas, 820, 500, './assets/gun_button2.png', None)
+
+    vocal_room_button_list, vocal_room_id_list = list_room(primus_canvas, user, vocal_room_button_list, room_labels, type_room, client.client_socket)
+
+    for button, id_room in zip(vocal_room_button_list, vocal_room_id_list):
+        button.bind('<Button-1>', lambda event, id=id_room: render_vocal_send(user, id, gun_button2, event))
+
+    screen.mainloop()
+    primus_canvas.update()
+
+def render_create_vocal_room(user, event=None):
+    global room_button_list, room_labels
+    room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
+    if room_name:
+        user.create_vocals_rooms(room_name, user.get_name())
+        
+        # new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button2.png', None)
+        # new_room_button.bind('<Button-1>', render_vocal_send(user, id_room, gun_button, event=None))
+        # room_button_list.append(new_room_button)
+        
+        # new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
+        # new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
+        # room_labels.append(new_room_label)
+
+    
+
+
+def render_vocal_send(user, id_room, gun_button, event=None):
+    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+    second_canvas.pack(fill=tk.BOTH, expand=True)
+    second_canvas.place(x=230, y=100)
+
+    gun_button.bind('<Button-1>', lambda event: send_vocal_message(user, id_room, event))
+    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+
+    messages, room_ids = user.listen_message_room_ids()
+    message_list = user.listen_message()
+    
+    dates = []
+    authors = []
+    vocals = []
+
+    dates = [message[0] for message in messages]
+    authors = [message[1] for message in messages]
+    # vocals = [message for message in message_list]
+
+    
+
+    # print("DEBUG: All Messages:", messages)
+    # print("DEBUG: Type of All Messages:", type(messages))
+
+    for message, date, author in zip(messages, dates, authors):
+        if message[3] == id_room: 
+            text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: \n\n")
+
+    text_area.configure(state ='disabled') 
+    text_area.pack(fill=tk.BOTH, expand=True)
+
+
+

@@ -2,8 +2,8 @@ from Render.Render_image import Image
 from Render.Render_Button import Button
 from tkinter import Label
 
-def list_room(primus_canvas, user, room_button_list, room_labels, client):
-    room_datas = user.show_room_data('text_room', client)
+def list_room(primus_canvas, user, room_button_list, room_labels, type_room, client):
+    room_datas = user.show_room_data(type_room, client)
     room_id_list = []
     room_name_list = []
 

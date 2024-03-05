@@ -1,60 +1,53 @@
-# import tempfile
-# import os
-# from datetime import datetime
+# import numpy as np
+# import soundfile as sf
+# import json  # Import de la bibliothèque json pour la sérialisation
 # from Vocal_message import Vocal_Recorder
 # from User import User
 # from Render.render_authentication import client
 
-# # Création d'une instance de la classe User
-# user = User(client,name = 'a', surname ='a', mail='a', password='a')
+# user = User(client, name='a', surname='a', mail='a', password='a')
 
 # # Enregistrement d'un message vocal avec Vocal_Recorder
 # recorder = Vocal_Recorder(filename="temp_recording.wav")
 # recorder.start_recording()
-# input("Appuyez sur Entrée pour arrêter l'enregistrement...")
 # recorder.save_recording()
 
-# # Récupération du chemin du fichier enregistré
+# # Récupération des données audio sous forme de tableau matriciel
 # audio_file_path = "temp_recording.wav"
-
+# # Lecture du fichier audio et conversion en tableau matriciel
+# with open(audio_file_path, 'rb') as file:
+#     audio_data, _ = sf.read(file)
+#     audio_list = audio_data.tolist()
 # # Obtention de l'auteur du message (peut être remplacé par un nom d'utilisateur réel)
-# author = "Utilisateur Test"
-
-# # Obtention de la date et de l'heure actuelles
-# hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+# author = "a"
 # # Création du message vocal dans la base de données
-# user.create_vocal_message(author, audio_file_path, id_room=1)
+# user.create_vocal_message(author, audio_list, id_room=1)
 
-import base64
-import tempfile
-import os
-from datetime import datetime
+import soundfile as sf
 from Vocal_message import Vocal_Recorder
 from User import User
 from Render.render_authentication import client
 
-user = User(client,name = 'a', surname ='a', mail='a', password='a')
+# Création d'une instance de l'utilisateur
+user = User(client, name='a', surname='a', mail='a', password='a')
 
 # Enregistrement d'un message vocal avec Vocal_Recorder
-recorder = Vocal_Recorder(filename="temp_recording.wav")
-recorder.start_recording()
-input("Appuyez sur Entrée pour arrêter l'enregistrement...")
-recorder.save_recording()
+recorder = Vocal_Recorder()
+recorded_data = recorder.start_recording()
 
-# Récupération du chemin du fichier enregistré
-audio_file_path = "temp_recording.wav"
+# Enregistrement des données audio dans un fichier temporaire
+temp_audio_file = "temp_recording.wav"
+sf.write(temp_audio_file, recorded_data, recorder.samplerate)
 
-# Lecture du contenu du fichier audio et encodage en base64
-with open(audio_file_path, 'rb') as file:
-    vocal_message_bytes = file.read()
-    vocal_message_base64 = base64.b64encode(vocal_message_bytes).decode('utf-8')
+# Lecture du fichier audio et conversion en tableau matriciel
+with open(temp_audio_file, 'rb') as file:
+    audio_data, samplerate = sf.read(file)
+    audio_list = audio_data.tolist()
 
 # Obtention de l'auteur du message (peut être remplacé par un nom d'utilisateur réel)
 author = "a"
 
-# Obtention de la date et de l'heure actuelles
-hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
 # Création du message vocal dans la base de données
-user.create_vocal_message(author, vocal_message_base64, id_room=100)
+user.create_vocal_message(author, audio_list, id_room=1)
+print(type(audio_list))
+user.listen_message()
