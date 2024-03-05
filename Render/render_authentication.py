@@ -25,10 +25,12 @@ auth = Authentication(client)
 second_canvas = None
 text_area = None
 
+run = False
 update_event = threading.Event()
+text_area_lock = threading.Lock()
 
 def read_messages_loop(second_canvas, text_area):
-    while True:
+    while run:
         data = client.receive_data(1024)
         if data :
             received_messages.append(data)
@@ -75,8 +77,9 @@ def check_authenticate(mail, password):
     return_authenticate = auth.authenticate(mail, password)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
-        client.connect_to_server('10.10.102.172', 8080)
+        client.connect_to_server('10.10.104.45', 8080)
         render_chat(user)
+        threading.Thread(target=read_messages_loop, args=(second_canvas, text_area)).start()
     else:
         print("Authentication failed")
 
@@ -111,60 +114,58 @@ room_labels = []
 
 
 def render_message_send(user, id_room, gun_button, event=None):
-    # on reçoit les messages et on les affiches 
     global second_canvas, text_area
+
+
     if second_canvas is None:
         second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
         second_canvas.pack(fill=tk.BOTH, expand=True)
         second_canvas.place(x=230, y=100)
-
-    if text_area is None:
-        text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white")
-        text_area.configure(state ='disabled') 
-        text_area.pack(fill=tk.BOTH, expand=True)
+    else :
+        for widget in second_canvas.winfo_children():
+            widget.destroy()
         
-        
-        gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
-        messages, room_ids = user.read_message()
-        
-        dates = []
-        authors = []
-        texts = []
-
-        dates = [message[0] for message in messages]
-        authors = [message[1] for message in messages]
-        texts = [message[2] for message in messages]
-
-        print("DEBUG: All Messages:", messages)
-        print("DEBUG: Type of All Messages:", type(messages))
 
 
-        threading.Thread(target=read_messages_loop, args=(second_canvas, text_area)).start()
-        # Lancer le rafraîchissement des messages
-        refresh_messages(second_canvas, text_area)
+    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white")
+    text_area.configure(state ='disabled') 
+    text_area.pack(fill=tk.BOTH, expand=True)
+    
+    gun_button.bind('<Button-1>', lambda event=None, user=user, id_room=id_room: send_message(user, id_room, event))
 
-        for messages, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
-            if room_id == id_room:
-                text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
+    
+    messages, room_ids = user.read_message()
+    
+    dates = []
+    authors = []
+    texts = []
+
+    dates = [message[0] for message in messages]
+    authors = [message[1] for message in messages]
+    texts = [message[2] for message in messages]
+
+    refresh_messages(second_canvas, text_area)
+
+    for messages, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
+        if room_id == id_room:
+            text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
 
 
-        text_area.configure(state ='disabled') 
-        text_area.pack(fill=tk.BOTH, expand=True)
+    text_area.configure(state ='disabled') 
+    text_area.pack(fill=tk.BOTH, expand=True)
 
 
 def refresh_messages(second_canvas, text_area):
     global received_messages, displayed_messages
-    text_area.configure(state='normal')
-    for message in received_messages:
-        if message not in displayed_messages : 
-            text_area.insert(tk.END, message + '\n')
-            displayed_messages.append(message)
-            text_area.configure(state='disabled')
-    # Réinitialiser l'event pour attendre la prochaine mise à jour
+    with text_area_lock:
+        run = True
+        text_area.configure(state='normal')
+        for message in received_messages:
+            if message not in displayed_messages:
+                text_area.insert(tk.END, message + '\n')
+                displayed_messages.append(message)
+                text_area.configure(state='disabled')
     update_event.clear()
-    # Planifier le rafraîchissement toutes les 1000 millisecondes (1 seconde)
-    second_canvas.after(1000, refresh_messages, second_canvas, text_area)
-
 
 
 def render_create_room(user, event=None):
@@ -184,24 +185,26 @@ def render_create_room(user, event=None):
 def render_create_message(user, event=None):
     enter_text = Writing_message(screen, "", x=260, y=491)    
     message_entry.append([enter_text])
-    area_message.extend([enter_text])
     enter_text.set_value("")
 
 def send_message(user, id_room, event=None):
     global received_messages
     author = user.get_name()
     message_text = message_entry[0][0].get_value()
-    print(message_text)
+    # print(message_text)
     try:
         user.create_message(author, message_text, id_room)
-        print("Test3")
         message_entry[0][0].set_value("")
+        with text_area_lock:
+            text_area.configure(state='normal')
+            text_area.insert(tk.END, f"Message: {message_text}\n\n")
+            text_area.configure(state='disabled')
         # Réinitialiser la liste des messages reçus
-        received_messages = []
+        # received_messages = []
         # ici on sort jamais vraiment de la send_message donc on ne peut pas vraiment faire de render
     except Exception as e:
         print(f"Error sending message: {e}")
-   
+  
 
 def render_chat(user, event=None):
     global room_button_list, room_labels
@@ -240,6 +243,7 @@ def render_chat(user, event=None):
 
     for button, id_room in zip(room_button_list, room_id_list):
         button.bind('<Button-1>', lambda event, id=id_room: render_message_send(user, id, gun_button, event))
+
 
     screen.mainloop()
     primus_canvas.update()

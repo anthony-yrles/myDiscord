@@ -73,7 +73,7 @@ class User:
         self.client.send_data('READ_MESSAGE','')
         
         messages = self.client.receive_data(1073741824)
-        print(f'2: {messages}')
+        # print(f'2: {messages}')
         messages = json.loads(messages)
         room_ids = [message[3] for message in messages]
         return messages, room_ids
@@ -113,16 +113,10 @@ class User:
 
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(type(hour),"check le type mon pote")
+        # print(type(hour),"check le type mon pote")
         params = (hour, author, message_text, id_room)
-        new_message = self.client.send_data('CREATE_NEW_MESSAGE', params)
-        return new_message
+        self.client.send_data('CREATE_NEW_MESSAGE', params)
     
-
-    def broadcast_message(self, author, message_text, id_room):
-        hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        params = (hour, author, message_text, id_room)
-        self.client.send_data('BROADCAST_MESSAGE', params)
 
 
     # def read_message(self, message_text):
