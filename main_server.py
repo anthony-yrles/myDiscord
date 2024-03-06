@@ -13,18 +13,17 @@ server est une instance de Server qui prend en paramètre server_address, host, 
 
 host = "127.0.0.1"
 user = "root"
-password = "rootequipe7+"  
+password = "Vcassis13*"  
 database = "mydiscord"
 
-server = Server('127.0.0.1', 8080, 5, host, user, password, database)
+server = Server('10.10.106.18', 8080, 5, host, user, password, database)
 
 try:
+    Server.run()
     while True:
         client_socket, client_address = server.accept_client()        
-        server.handle_client_request(client_socket)
 
 except Exception as e:
     print(f"Error: {e}")
 finally:
     server.close()
-    

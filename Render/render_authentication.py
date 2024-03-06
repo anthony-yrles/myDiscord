@@ -7,6 +7,8 @@ from Render.Writing_message import Writing_message
 from Render.brouillon import list_room
 from Authentication import Authentication
 from socket_client.Client import Client
+import threading
+import time
 import sounddevice as sd
 import tempfile
 from scipy.io.wavfile import write
@@ -18,14 +20,32 @@ screen.title("Talk to me!")
 primus_canvas = tk.Canvas(screen, width=900, height=600)
 primus_canvas.pack()
 
-
 custom_entries = []
 area_message = []
 message_entry = []
+area_message = []   
+received_messages = []
+displayed_messages = []
 client = Client()
-client.connect_to_server('127.0.0.1', 8080)
-# client.connect_to_server('127.0.0.1', 8080)
 auth = Authentication(client)
+second_canvas = None
+text_area = None
+
+run = False
+update_event = threading.Event()
+text_area_lock = threading.Lock()
+
+def read_messages_loop(text_area):
+    while run:
+        data = client.receive_data(1024)
+        if data :
+            received_messages.append(data)
+            refresh_messages(text_area)
+
+    # Signaler au thread d'interface graphique de mettre à jour les messages
+    update_event.set()
+
+
 
 def render_main_menu():
 
@@ -62,10 +82,12 @@ def render_sign_in(event=None):
     primus_canvas.update()
     
 def check_authenticate(mail, password):
-    print("Clicked Log In Button")
     return_authenticate = auth.authenticate(mail, password)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
+        
+        client.connect_to_server('10.10.106.18', 8080)
+        threading.Thread(target=read_messages_loop, args=(text_area)).start()
         render_chat(user)
     else:
         print("Authentication failed")
@@ -86,7 +108,6 @@ def render_log_in(event=None):
     real_log_in_button = Button(primus_canvas, 340, 360, './assets/log_in_button_2.png', None)
     real_log_in_button.bind('<Button-1>', lambda event: check_authenticate(entry5.get_value(), entry6.get_value()))
 
-
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
 
@@ -102,12 +123,24 @@ room_labels = []
 
 
 def render_message_send(user, id_room, gun_button, event=None):
-    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    second_canvas.pack(fill=tk.BOTH, expand=True)
-    second_canvas.place(x=230, y=100)
+    global second_canvas, text_area
 
-    gun_button.bind('<Button-1>', lambda event: send_message(user, id_room, event))
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+
+    if second_canvas is None:
+        second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+        second_canvas.pack(fill=tk.BOTH, expand=True)
+        second_canvas.place(x=230, y=100)
+    else :
+        for widget in second_canvas.winfo_children():
+            widget.destroy()
+        
+
+
+    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white", relief=tk.FLAT)
+    
+    gun_button.bind('<Button-1>', lambda event=None, user=user, id_room=id_room: send_message(user, id_room, event))
+
+    
     messages, room_ids = user.read_message()
     
     dates = []
@@ -118,17 +151,30 @@ def render_message_send(user, id_room, gun_button, event=None):
     authors = [message[1] for message in messages]
     texts = [message[2] for message in messages]
 
-    print("DEBUG: All Messages:", messages)
-    print("DEBUG: Type of All Messages:", type(messages))
 
-    for message, date, author, text in zip(messages, dates, authors, texts):
-        if message[3] == id_room:  
+
+    for messages, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
+        if room_id == id_room:
             text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
-
 
 
     text_area.configure(state ='disabled') 
     text_area.pack(fill=tk.BOTH, expand=True)
+
+def refresh_messages(text_area):
+    global received_messages, displayed_messages
+    if run:
+        update_event.wait()
+        with text_area_lock:
+            text_area.configure(state='normal')
+            for message in received_messages:
+                if message not in displayed_messages:
+                    text_area.insert(tk.END, message + '\n')
+                    displayed_messages.append(message)
+                    text_area.configure(state='disabled')
+
+        received_messages = []
+        update_event.clear()
 
 
 def render_create_room(user, event=None):
@@ -137,13 +183,13 @@ def render_create_room(user, event=None):
     if room_name:
         user.create_room(room_name, user.get_name())
         
-        new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
-        new_room_button.bind('<Button-1>', render_message_send(user))
-        room_button_list.append(new_room_button)
+        # new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
+        # new_room_button.bind('<Button-1>', render_message_send(user))
+        # room_button_list.append(new_room_button)
         
-        new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
-        new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
-        room_labels.append(new_room_label)
+        # new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
+        # new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
+        # room_labels.append(new_room_label)
 
 def render_create_message(user, event=None):
     enter_text = Writing_message(screen, "", x=260, y=491)    
@@ -152,18 +198,20 @@ def render_create_message(user, event=None):
     enter_text.set_value("")
 
 def send_message(user, id_room, event=None):
+    global received_messages
     author = user.get_name()
     message_text = message_entry[0][0].get_value()
-    print(message_text)
+    # print(message_text)
     try:
         user.create_message(author, message_text, id_room)
-        print("Test3")
         message_entry[0][0].set_value("")
+        # with text_area_lock:
+        #     text_area.configure(state='normal')
+        #     text_area.insert(tk.END, f"Message: {message_text}\n\n")
+        #     text_area.configure(state='disabled')
     except Exception as e:
         print(f"Error sending message: {e}")
-   
-
-
+  
 
 def render_chat(user, event=None):
     print("Chat")
@@ -179,7 +227,9 @@ def render_chat(user, event=None):
     background_image.draw()
  
     render_create_message(user)
-    
+ 
+    # enter_text = Writing_message(screen, "Write your message", x=260, y=491)    
+    # custom_entries.append(enter_text)
 
     micro_button = Button(primus_canvas, 80, 535, './assets/micro_button.png', None)
     micro_button.bind('<Button-1>', lambda event: render_vocal_chat(user, event))

@@ -14,7 +14,6 @@ class HttpServer(http.server.BaseHTTPRequestHandler):
 
         from socket_server.Server import Server
 
-        # Votre logique de traitement ici
         try:
             # Convertir les données JSON
             data = json.loads(post_data.decode('utf-8'))
