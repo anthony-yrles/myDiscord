@@ -11,6 +11,7 @@ import sounddevice as sd
 import tempfile
 from scipy.io.wavfile import write
 import numpy as np
+from Vocal_message import Vocal_Recorder
 
 screen = tk.Tk()
 screen.title("Talk to me!")
@@ -217,6 +218,7 @@ def render_vocal_chat(user, event=None):
     print("Vocal Chat")
     type_room = 'vocal_room'
 
+
     for enter_text in area_message:
         enter_text.destroy_entry()
 
@@ -255,48 +257,44 @@ def render_create_vocal_room(user, event=None):
     room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
     if room_name:
         user.create_vocals_rooms(room_name, user.get_name())
-        
-        # new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button2.png', None)
-        # new_room_button.bind('<Button-1>', render_vocal_send(user, id_room, gun_button, event=None))
-        # room_button_list.append(new_room_button)
-        
-        # new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
-        # new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
-        # room_labels.append(new_room_label)
-
-    
-
 
 def render_vocal_send(user, id_room, gun_button, event=None):
     second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
     second_canvas.pack(fill=tk.BOTH, expand=True)
-    second_canvas.place(x=230, y=100)
+    second_canvas.place(x=290, y=100)
 
-    gun_button.bind('<Button-1>', lambda event: send_vocal_message(user, id_room, event))
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white") 
+    recorder = Vocal_Recorder()
+
+    gun_button.bind('<Button-1>', lambda event: recorder.start_recording(user))
+    text_area = scrolledtext.ScrolledText(second_canvas, width=50, height=15, font=("Arial", 15), bg="black", fg="white",relief=tk.FLAT) 
 
     messages, room_ids = user.listen_message_room_ids()
-    message_list = user.listen_message()
+    # message_list = user.listen_message(i)
     
     dates = []
     authors = []
-    vocals = []
 
     dates = [message[0] for message in messages]
     authors = [message[1] for message in messages]
-    # vocals = [message for message in message_list]
-
-    
-
-    # print("DEBUG: All Messages:", messages)
-    # print("DEBUG: Type of All Messages:", type(messages))
-
+    i = 0
+    listen_button_list = []
     for message, date, author in zip(messages, dates, authors):
-        if message[3] == id_room: 
-            text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: \n\n")
+        if message[3] == id_room:
+            listen_button = Button(primus_canvas, 245, 120 + 92 * i, './assets/listen_button.png', None)
+            listen_button_list.append(listen_button)
+
+            message_text = f"Date: {date}\nAuteur: {author}\nMessage:{'Vous a envoyé un message vocal'}\n\n"
+            text_area.insert(tk.END, message_text)
+            
+            i+=1
+    for i, button in enumerate(listen_button_list):
+        button.bind('<Button-1>', lambda event, index=i: user.listen_message(index))
 
     text_area.configure(state ='disabled') 
     text_area.pack(fill=tk.BOTH, expand=True)
+
+    screen.mainloop()
+    second_canvas.update()
 
 
 

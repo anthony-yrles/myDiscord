@@ -4,9 +4,10 @@ from Text_room import Text_room
 import json
 import sounddevice as sd
 import os
-from lib import *
 import time
 import re
+import numpy as np
+
 
 class User:
     def __init__(self, client, name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
@@ -130,13 +131,17 @@ class User:
         self.client.send_data('CREATE_NEW_VOCAL_MESSAGE', params)
 
 
-    def listen_message(self):
+    def listen_message(self, i):
         self.client.send_data('LISTEN_VOCAL', '')
         messages = self.client.receive_data(107374182)
         messages = json.loads(messages)
-        message = messages[0][2]
+        message = messages[i][2]
         message_list = json.loads(message)
-        return message_list
+        message_array = np.array(message_list, dtype=np.float32)
+        samplerate = 44100
+        sd.play(message_array, samplerate)
+        sd.wait()
+        time.sleep(2)
 
     def listen_message_room_ids(self):
         self.client.send_data('LISTEN_VOCAL', '')
