@@ -35,12 +35,12 @@ run = False
 update_event = threading.Event()
 text_area_lock = threading.Lock()
 
-def read_messages_loop(text_area):
+def read_messages_loop():
     while run:
         data = client.receive_data(1024)
         if data :
             received_messages.append(data)
-            refresh_messages(text_area)
+            # refresh_messages(text_area)
 
     # Signaler au thread d'interface graphique de mettre à jour les messages
     update_event.set()
@@ -87,7 +87,7 @@ def check_authenticate(mail, password):
         user = return_authenticate[1]
         
         client.connect_to_server('10.10.106.18', 8080)
-        threading.Thread(target=read_messages_loop, args=(text_area)).start()
+        threading.Thread(target=read_messages_loop).start()
         render_chat(user)
     else:
         print("Authentication failed")
@@ -125,7 +125,9 @@ room_labels = []
 def render_message_send(user, id_room, gun_button, event=None):
     global second_canvas, text_area
 
-
+    # second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+    # second_canvas.pack(fill=tk.BOTH, expand=True)
+    # second_canvas.place(x=230, y=100)
     if second_canvas is None:
         second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
         second_canvas.pack(fill=tk.BOTH, expand=True)
@@ -134,7 +136,6 @@ def render_message_send(user, id_room, gun_button, event=None):
         for widget in second_canvas.winfo_children():
             widget.destroy()
         
-
 
     text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white", relief=tk.FLAT)
     
@@ -156,7 +157,6 @@ def render_message_send(user, id_room, gun_button, event=None):
     for messages, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
         if room_id == id_room:
             text_area.insert(tk.INSERT, f"Date: {date}\nAuteur: {author}\nMessage: {text.replace('{', '').replace('}', '')}\n\n")
-
 
     text_area.configure(state ='disabled') 
     text_area.pack(fill=tk.BOTH, expand=True)
@@ -260,9 +260,11 @@ def render_chat(user, event=None):
     primus_canvas.update()
 
 
-
 vocal_room_button_list = []
 vocal_room_id_list = []
+listen_button_list = []
+
+
 def render_vocal_chat(user, event=None):
     global room_labels, area_message, vocal_room_button_list, vocal_room_id_list
     print("Vocal Chat")
@@ -274,6 +276,7 @@ def render_vocal_chat(user, event=None):
 
     for label in room_labels:
         label.destroy()
+
 
     background_vocal = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_vocal.draw()
@@ -309,9 +312,17 @@ def render_create_vocal_room(user, event=None):
         user.create_vocals_rooms(room_name, user.get_name())
 
 def render_vocal_send(user, id_room, gun_button, event=None):
-    second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    second_canvas.pack(fill=tk.BOTH, expand=True)
-    second_canvas.place(x=290, y=100)
+    global primus_canvas, second_canvas, text_area, listen_button_list
+    listen_button_list.clear()
+
+
+    if second_canvas is None:
+        second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+        second_canvas.pack(fill=tk.BOTH, expand=True)
+        second_canvas.place(x=290, y=100)
+    else :
+        for widget in second_canvas.winfo_children():
+            widget.destroy()
 
     recorder = Vocal_Recorder()
 
@@ -327,7 +338,6 @@ def render_vocal_send(user, id_room, gun_button, event=None):
     dates = [message[0] for message in messages]
     authors = [message[1] for message in messages]
     i = 0
-    listen_button_list = []
     for message, date, author in zip(messages, dates, authors):
         if message[3] == id_room:
             listen_button = Button(primus_canvas, 245, 120 + 92 * i, './assets/listen_button.png', None)
