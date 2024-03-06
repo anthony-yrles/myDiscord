@@ -22,10 +22,11 @@ primus_canvas.pack()
 
 custom_entries = []
 area_message = []
-message_entry = []
-area_message = []   
+message_entry = [] 
 received_messages = []
 displayed_messages = []
+room_button_list = []
+room_labels = []
 client = Client()
 auth = Authentication(client)
 second_canvas = None
@@ -48,6 +49,13 @@ def read_messages_loop():
 
 
 def render_main_menu():
+
+    for entry in custom_entries:
+        entry.destroy_entry()
+    for enter_text in area_message:
+        enter_text.destroy_entry()
+    for label in room_labels:
+        label.destroy()
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_menu_2.png')
     background_image.draw()
@@ -117,11 +125,6 @@ def render_log_in(event=None):
     screen.mainloop()
     primus_canvas.update()
 
-
-room_button_list = []
-room_labels = []
-
-
 def render_message_send(user, id_room, gun_button, event=None):
     global second_canvas, text_area
 
@@ -182,14 +185,6 @@ def render_create_room(user, event=None):
     room_name = simpledialog.askstring("Nouvelle Room", "Entrez le nom de la nouvelle room:")  
     if room_name:
         user.create_room(room_name, user.get_name())
-        
-        # new_room_button = Button(primus_canvas, 20, 100 + 50 * len(room_button_list), './assets/gun_button.png', None)
-        # new_room_button.bind('<Button-1>', render_message_send(user))
-        # room_button_list.append(new_room_button)
-        
-        # new_room_label = Label(primus_canvas, text=room_name, bg="black", font=("arial", 15), fg="white")
-        # new_room_label.place(x=60, y=110 + 27 * len(room_button_list))  
-        # room_labels.append(new_room_label)
 
 def render_create_message(user, event=None):
     enter_text = Writing_message(screen, "", x=260, y=491)    
@@ -236,18 +231,12 @@ def render_chat(user, event=None):
 
     message_button = Button(primus_canvas, 25, 540, './assets/message_button.png', None)
     # message_button.bind('<Button-1>', render_chat)
-    
-    setting_button = Button(primus_canvas, 130, 535, './assets/setting_button.png', None)
-    # setting_button.bind('<Button-1>', render_main_menu)
 
     add_chat_button = Button(primus_canvas, 135, 30, './assets/add_chat_button.png', None)
     add_chat_button.bind('<Button-1>', lambda event: render_create_room(user, event))
 
     delete_button = Button(primus_canvas, 750, 40, './assets/delete_button.png', None)
-    # delete_button.bind('<Button-1>', render_main_menu)
-
-    search_button = Button(primus_canvas, 700, 30, './assets/search_button.png', None)
-    # search_button.bind('<Button-1>', render_main_menu)
+    delete_button.bind('<Button-1>', lambda event: render_main_menu())
 
     gun_button = Button(primus_canvas, 820, 500, './assets/gun_button.png', None)
 
@@ -285,9 +274,6 @@ def render_vocal_chat(user, event=None):
    
     message_button2 = Button(primus_canvas, 25, 540, './assets/message_button2.png', None)
     message_button2.bind('<Button-1>', lambda event: render_chat(user, event))
-
-    setting_button2 = Button(primus_canvas, 130, 535, './assets/setting_button2.png', None)
-    # setting_button.bind('<Button-1>', render_main_menu)
 
     add_chat_button2 = Button(primus_canvas, 135, 30, './assets/add_chat_button2.png', None)
     add_chat_button2.bind('<Button-1>', lambda event: render_create_vocal_room(user, event))
