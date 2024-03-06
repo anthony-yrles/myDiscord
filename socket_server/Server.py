@@ -10,6 +10,7 @@ from socket_server.Db import Db
 import json
 import threading
 import http.server
+import hashlib
 from http.server import ThreadingHTTPServer
 from .HttpServer import HttpServer
 
@@ -46,14 +47,8 @@ class Server(metaclass=SingletonMeta):
             'SHOW_ROOM_DATA' : self.show_room_data
             }
 
-
-    
-
-
-        
-
     def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
-        server_address = ('10.10.106.18', port)
+        server_address = ('127.0.0.1', port)
         httpd = server_class(server_address, handler_class)
         try:
             thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
@@ -62,25 +57,6 @@ class Server(metaclass=SingletonMeta):
         except KeyboardInterrupt:
             thread.join()
             httpd.shutdown()
-
-
-
-    
-
-
-        
-
-    def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
-        server_address = ('10.10.106.18', port)
-        httpd = server_class(server_address, handler_class)
-        try:
-            thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
-            thread.start()
-
-        except KeyboardInterrupt:
-            thread.join()
-            httpd.shutdown()
-
 
     def accept_client(self):
         while True :
@@ -112,8 +88,12 @@ class Server(metaclass=SingletonMeta):
         return self.db.fetch(query, params)
     
     def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
+        password_bytes = password.encode('utf-8')
+        hash_password = hashlib.sha256()
+        hash_password.update(password_bytes)
+        hashed_password = hash_password.hexdigest()
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
-        params = (name, surname, mail, password, list_room_private, list_room_group, list_created_room)
+        params = (name, surname, mail, hashed_password, list_room_private, list_room_group, list_created_room)
         self.db.executeQuery(query, params)
 
     def create_text_room(self, name, list_admin, list_modo = '', list_user = ''):

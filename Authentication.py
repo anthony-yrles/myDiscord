@@ -1,5 +1,6 @@
 import json
 import requests
+import hashlib
 from User import User
 
 class Authentication:
@@ -16,9 +17,11 @@ class Authentication:
     def authenticate(self, mail, password):
         data = {'method': ('READ_TABLE_USER'), 'params': (mail,)}
         try:
-            user_data = requests.post('http://10.10.106.18:8888', json=data)
+            user_data = requests.post('http://127.0.0.1:8888', json=data)
             user_data.raise_for_status()
             response_data = user_data.json()
+            password = hashlib.sha256(password.encode()).hexdigest()
+            print(password)
 
             # Assurez-vous que les données attendues sont présentes dans la réponse
             if mail == response_data[0][3] and password == response_data[0][4]:
@@ -44,10 +47,12 @@ class Authentication:
     
     def create_account(self, name, surname, mail, password):
         data = {'method': ('CREATE_USER'), 'params': (name, surname, mail, password)}
-        user_data = requests.post('http://10.10.106.18:8888', json=data)
+        user_data = requests.post('http://127.0.0.1:8888', json=data)
         user_data.raise_for_status()
 
 
+    # def logout(self):
+    #     return "Logout successful"
         
     # def login(self):
     #     if self.authenticate():
@@ -55,8 +60,6 @@ class Authentication:
     #     else:
     #         return "Login failed"
     
-    # def logout(self):
-    #     return "Logout successful"
     
     # def creation_account(self, client):
     #     client.send_data([])

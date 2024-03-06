@@ -81,7 +81,6 @@ class User:
 
 
     def read_message(self):
-        # print(f'1: {params}')
         self.client.send_data('READ_MESSAGE','')
         messages = self.client.receive_data(1073741824)
         messages = json.loads(messages)
@@ -94,7 +93,6 @@ class User:
         room_ids = [message[3] for message in messages]
         return messages, room_ids
 
-    
     def show_room_data(self, type_of_room, client):
         params = (type_of_room,)
         self.client.send_data('SHOW_ROOM_DATA', params)
@@ -118,24 +116,16 @@ class User:
         else:
             return False
 
-
-
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         params = (hour, author, message_text, id_room)
         self.client.send_data('CREATE_NEW_MESSAGE', params)
-
-    # def create_vocal_message(self, author, message_vocal, id_room):
-    #     hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #     params = (hour, author, message_vocal, id_room)
-    #     self.client.send_data('CREATE_NEW_VOCAL_MESSAGE', params)
 
     def create_vocal_message(self, author, message_vocal, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         message_vocal_str = json.dumps(message_vocal)
         params = (hour, author, message_vocal_str, id_room)
         self.client.send_data('CREATE_NEW_VOCAL_MESSAGE', params)
-
 
     def listen_message(self, i):
         self.client.send_data('LISTEN_VOCAL', '')
@@ -157,14 +147,5 @@ class User:
         room_ids = [message[3] for message in messages]
         return messages, room_ids
         
-    # def listen_message(self):
-    #     self.client.send_data('LISTEN_VOCAL', '')
-    #     messages = self.client.receive_data(107374182)
-    #     time.sleep(2)  
-    #     messages = json.loads(messages)
-    #     message = messages[0][2]
-    #     message_list = eval(message)
-    #     return message_list
-    #     #room_ids = [message[3] for message in messages]
-    #     #return messages, room_ids
+
 
