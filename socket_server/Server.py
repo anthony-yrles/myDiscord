@@ -5,12 +5,15 @@ ainsi que l'adresse du server et une liste des clients
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 from socket_server.Socket_server import Socket_server
+from socket_server.Singleton_Meta import SingletonMeta
 from socket_server.Db import Db
 import json
 import threading
-import base64
+import http.server
+from http.server import ThreadingHTTPServer
+from .HttpServer import HttpServer
 
-class Server:
+class Server(metaclass=SingletonMeta):
 
     """
     Méthode utilisé:
@@ -19,6 +22,8 @@ class Server:
 
     close: Ferme le socket
     """
+
+    client_connected = {}
 
     def __init__(self, address, port, backlog, host, user, password, database):
         self.db = Db(host, user, password, database)
@@ -41,13 +46,53 @@ class Server:
             'SHOW_ROOM_DATA' : self.show_room_data
             }
 
+
+    
+
+
+        
+
+    def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
+        server_address = ('10.10.106.18', port)
+        httpd = server_class(server_address, handler_class)
+        try:
+            thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
+            thread.start()
+
+        except KeyboardInterrupt:
+            thread.join()
+            httpd.shutdown()
+
+
+
+    
+
+
+        
+
+    def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
+        server_address = ('10.10.106.18', port)
+        httpd = server_class(server_address, handler_class)
+        try:
+            thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
+            thread.start()
+
+        except KeyboardInterrupt:
+            thread.join()
+            httpd.shutdown()
+
+
     def accept_client(self):
-        while True:
+        while True :
+            print("Waiting for client connection...")
             client_socket, client_address = self.server_socket.accept_connection()
+            self.client_connected[client_address] = client_socket
+            print(f"Client {self.client_connected} connected")
             # Créer un thread pour gérer la requête du client
+            print("Starting client thread...")
             client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
-            # Démarrer le thread
             client_thread.start()
+            print("Client thread started")
 
     def close(self):
         self.server_socket.close()
@@ -60,10 +105,11 @@ class Server:
             client_socket.send(json_data.encode())
         except Exception as e:
             print(f"Error sending data: {e}")
-
-    def read_table_user(self):
-        query = f'SELECT * FROM user'
-        return self.db.fetch(query, params=None)
+    
+    def read_table_user(self, mail):
+        query = f'SELECT * FROM user WHERE mail = %s'
+        params = (mail,)
+        return self.db.fetch(query, params)
     
     def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
         query = f'INSERT INTO USER (name, surname, mail, password, list_room_private, list_room_group, list_created_room) VALUES (%s, %s, %s, %s, %s, %s, %s)'
@@ -87,11 +133,18 @@ class Server:
     def read_list_room_user(self):
         query = f'SELECT list_user FROM text_room'
         return self.db.fetch(query, params=None)
+    
+    def send_to_all_clients(self, message):
+        for client_socket in self.client_connected.values():
+            self.send_data(client_socket, message)
 
     def create_new_message(self, hour, author, message_text, id_room):
         query = 'INSERT INTO message (hour, author, message_text, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
+        self.send_to_all_clients(params)
+        # envoyer a tous les utilisateurs connectes dans le dictionnaire le message recu
+    
 
     def create_new_vocal_message(self, hour, author, message_vocal, id_room):
         # message_vocal_json = json.dumps(message_vocal)
@@ -167,11 +220,10 @@ class Server:
                 print(client_data_received)
                 if not client_data_received:
                     break
-
                 request_data = json.loads(client_data_received)
                 method_name = request_data['method']
                 params = request_data['params']
-
+                
                 if method_name in self.query_dictionnary:
                     result = self.query_dictionnary[method_name](*params)
                     self.send_data(client_socket, result)
@@ -182,29 +234,4 @@ class Server:
         finally:
             # Assurez-vous de fermer la connexion à la fin du traitement
             client_socket.close()
-
-    # def handle_client_request(self, client_socket):
-    #     try:
-    #         while True:
-    #             client_data_received = client_socket.recv(1073741824).decode()
-    #             if not client_data_received:
-    #                 # Si la connexion est fermée côté client, sortir de la boucle
-    #                 break
-
-    #             request_data = json.loads(client_data_received)
-    #             method_name = request_data['method']
-    #             params = request_data['params']
-
-    #             if method_name in self.query_dictionnary:
-    #                 result = self.query_dictionnary[method_name](*params)
-    #                 self.send_data(client_socket, result)
-    #             else:
-    #                 self.send_data(client_socket, "Command not recognized")
-    #     except Exception as e:
-    #         print(f"Error handling client request: {e}")
-    #     finally:
-    #         # Assurez-vous de fermer la connexion à la fin du traitement
-    #         client_socket.close()
-
-
 

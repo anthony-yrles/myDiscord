@@ -87,6 +87,12 @@ class User:
         messages = json.loads(messages)
         room_ids = [message[3] for message in messages]
         return messages, room_ids
+        
+        messages = self.client.receive_data(1073741824)
+        # print(f'2: {messages}')
+        messages = json.loads(messages)
+        room_ids = [message[3] for message in messages]
+        return messages, room_ids
 
     
     def show_room_data(self, type_of_room, client):

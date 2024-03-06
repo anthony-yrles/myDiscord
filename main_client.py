@@ -8,6 +8,7 @@ from socket_client.Client import *
 from Authentication import *
 from Text_room import *
 from Render.current_render import state
+import threading
 
 
 """
@@ -16,16 +17,15 @@ client est une instance de Client qui prend en paramètre server_address.
 
 """
 
+
+
 try:
     running = True 
+
     while running:
+        state()()
 
-        state ()()
-
-        user_input = input("Press 'q' to quit: ")
-        if user_input.lower() == 'q':
-            break
 except Exception as e:
     print(f"Error: {e}")
 # finally:
-    # client.close()
+#     client.close()
