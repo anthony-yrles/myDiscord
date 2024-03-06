@@ -5,6 +5,10 @@ données au serveur et reçoit des réponses.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 from socket_client.Client import *
+from Authentication import *
+from Text_room import *
+from Render.current_render import state
+
 
 """
 server_address est un tuple contenant l'adresse IP du serveur et le port sur lequel le serveur écoute.
@@ -12,7 +16,16 @@ client est une instance de Client qui prend en paramètre server_address.
 
 """
 
-client = Client()
-client.connect_to_server('10.10.74.165', 8080)
-client.send_data("Hello, Server !")
-client.close()
+try:
+    running = True 
+    while running:
+
+        state ()()
+
+        user_input = input("Press 'q' to quit: ")
+        if user_input.lower() == 'q':
+            break
+except Exception as e:
+    print(f"Error: {e}")
+# finally:
+    # client.close()
