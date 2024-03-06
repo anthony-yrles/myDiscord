@@ -53,7 +53,7 @@ class Server(metaclass=SingletonMeta):
         
 
     def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
-        server_address = ('10.10.106.18', port)
+        server_address = ('127.0.0.1', port)
         httpd = server_class(server_address, handler_class)
         try:
             thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
@@ -71,7 +71,7 @@ class Server(metaclass=SingletonMeta):
         
 
     def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
-        server_address = ('10.10.106.18', port)
+        server_address = ('127.0.0.1', port)
         httpd = server_class(server_address, handler_class)
         try:
             thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))

@@ -16,7 +16,7 @@ class Authentication:
     def authenticate(self, mail, password):
         data = {'method': ('READ_TABLE_USER'), 'params': (mail,)}
         try:
-            user_data = requests.post('http://10.10.106.18:8888', json=data)
+            user_data = requests.post('http://127.0.0.1:8888', json=data)
             user_data.raise_for_status()
             response_data = user_data.json()
 
@@ -44,7 +44,7 @@ class Authentication:
     
     def create_account(self, name, surname, mail, password):
         data = {'method': ('CREATE_USER'), 'params': (name, surname, mail, password)}
-        user_data = requests.post('http://10.10.106.18:8888', json=data)
+        user_data = requests.post('http://127.0.0.1:8888', json=data)
         user_data.raise_for_status()
 
 

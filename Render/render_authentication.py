@@ -86,7 +86,7 @@ def check_authenticate(mail, password):
     if return_authenticate[0] == True:
         user = return_authenticate[1]
         
-        client.connect_to_server('10.10.106.18', 8080)
+        client.connect_to_server('127.0.0.1', 8080)
         threading.Thread(target=read_messages_loop, args=(text_area)).start()
         render_chat(user)
     else:
