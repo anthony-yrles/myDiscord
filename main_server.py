@@ -17,7 +17,7 @@ password = "Vcassis13*"
 database = "mydiscord"
 
 
-server = Server('10.10.104.45', 8080, 5, host, user, password, database)
+server = Server('10.10.106.18', 8080, 5, host, user, password, database)
 
 try:
     Server.run()

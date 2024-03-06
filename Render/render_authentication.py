@@ -29,13 +29,15 @@ run = False
 update_event = threading.Event()
 text_area_lock = threading.Lock()
 
-def read_messages_loop(second_canvas, text_area):
+def read_messages_loop(text_area):
     while run:
         data = client.receive_data(1024)
         if data :
             received_messages.append(data)
-            # Signaler au thread d'interface graphique de mettre à jour les messages
-            update_event.set()
+            refresh_messages(text_area)
+
+    # Signaler au thread d'interface graphique de mettre à jour les messages
+    update_event.set()
 
 
 
@@ -77,9 +79,10 @@ def check_authenticate(mail, password):
     return_authenticate = auth.authenticate(mail, password)
     if return_authenticate[0] == True:
         user = return_authenticate[1]
-        client.connect_to_server('10.10.104.45', 8080)
+        
+        client.connect_to_server('10.10.106.18', 8080)
+        threading.Thread(target=read_messages_loop, args=(text_area)).start()
         render_chat(user)
-        threading.Thread(target=read_messages_loop, args=(second_canvas, text_area)).start()
     else:
         print("Authentication failed")
 
@@ -127,9 +130,7 @@ def render_message_send(user, id_room, gun_button, event=None):
         
 
 
-    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white")
-    text_area.configure(state ='disabled') 
-    text_area.pack(fill=tk.BOTH, expand=True)
+    text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white", relief=tk.FLAT)
     
     gun_button.bind('<Button-1>', lambda event=None, user=user, id_room=id_room: send_message(user, id_room, event))
 
@@ -144,7 +145,7 @@ def render_message_send(user, id_room, gun_button, event=None):
     authors = [message[1] for message in messages]
     texts = [message[2] for message in messages]
 
-    refresh_messages(second_canvas, text_area)
+
 
     for messages, date, author, text, room_id in zip(messages, dates, authors, texts, room_ids):
         if room_id == id_room:
@@ -154,18 +155,20 @@ def render_message_send(user, id_room, gun_button, event=None):
     text_area.configure(state ='disabled') 
     text_area.pack(fill=tk.BOTH, expand=True)
 
-
-def refresh_messages(second_canvas, text_area):
+def refresh_messages(text_area):
     global received_messages, displayed_messages
-    with text_area_lock:
-        run = True
-        text_area.configure(state='normal')
-        for message in received_messages:
-            if message not in displayed_messages:
-                text_area.insert(tk.END, message + '\n')
-                displayed_messages.append(message)
-                text_area.configure(state='disabled')
-    update_event.clear()
+    if run:
+        update_event.wait()
+        with text_area_lock:
+            text_area.configure(state='normal')
+            for message in received_messages:
+                if message not in displayed_messages:
+                    text_area.insert(tk.END, message + '\n')
+                    displayed_messages.append(message)
+                    text_area.configure(state='disabled')
+
+        received_messages = []
+        update_event.clear()
 
 
 def render_create_room(user, event=None):
@@ -195,19 +198,17 @@ def send_message(user, id_room, event=None):
     try:
         user.create_message(author, message_text, id_room)
         message_entry[0][0].set_value("")
-        with text_area_lock:
-            text_area.configure(state='normal')
-            text_area.insert(tk.END, f"Message: {message_text}\n\n")
-            text_area.configure(state='disabled')
-        # Réinitialiser la liste des messages reçus
-        # received_messages = []
-        # ici on sort jamais vraiment de la send_message donc on ne peut pas vraiment faire de render
+        # with text_area_lock:
+        #     text_area.configure(state='normal')
+        #     text_area.insert(tk.END, f"Message: {message_text}\n\n")
+        #     text_area.configure(state='disabled')
     except Exception as e:
         print(f"Error sending message: {e}")
   
 
 def render_chat(user, event=None):
     global room_button_list, room_labels
+    run = True
     
     for entry in custom_entries:
         entry.destroy_entry()

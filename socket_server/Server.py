@@ -50,7 +50,7 @@ class Server(metaclass=SingletonMeta):
         
 
     def run(server_class=ThreadingHTTPServer, handler_class=HttpServer, port=8888):
-        server_address = ('10.10.104.45', port)
+        server_address = ('10.10.106.18', port)
         httpd = server_class(server_address, handler_class)
         try:
             thread = threading.Thread(None, httpd.serve_forever, args=(threading.Event().set(),))
@@ -141,7 +141,6 @@ class Server(metaclass=SingletonMeta):
         query = f'UPDATE message SET reaction_count_1 = %s, reaction_count_2 = %s WHERE id = %s'
         params = (reaction_count_1, reaction_count_2, id)
         self.db.executeQuery(query, params)
-    
 
     def handle_client_request(self, client_socket):
         try:
@@ -158,7 +157,6 @@ class Server(metaclass=SingletonMeta):
                 if method_name in self.query_dictionnary:
                     result = self.query_dictionnary[method_name](*params)
                     self.send_data(client_socket, result)
-                    # self.broadcast_message(result, client_socket)
                 else:
                     self.send_data(client_socket, "Command not recognized")
         except Exception as e:
