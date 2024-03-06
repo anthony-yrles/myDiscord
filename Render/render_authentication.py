@@ -4,7 +4,7 @@ from Render.Render_image import Image
 from Render.Render_Button import Button
 from Render.Entry import CustomEntry
 from Render.Writing_message import Writing_message
-from Render.brouillon import list_room
+from Render.list_room import list_room
 from Authentication import Authentication
 from socket_client.Client import Client
 import threading
@@ -125,11 +125,8 @@ room_labels = []
 def render_message_send(user, id_room, gun_button, event=None):
     global second_canvas, text_area
 
-    # second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
-    # second_canvas.pack(fill=tk.BOTH, expand=True)
-    # second_canvas.place(x=230, y=100)
     if second_canvas is None:
-        second_canvas = tk.Canvas(screen, width=630, height=350, bg="lightblue")
+        second_canvas = tk.Canvas(screen, width=630, height=350, relief=tk.FLAT, bg="black")
         second_canvas.pack(fill=tk.BOTH, expand=True)
         second_canvas.place(x=230, y=100)
     else :
