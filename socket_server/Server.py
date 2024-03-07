@@ -142,33 +142,17 @@ class Server(metaclass=SingletonMeta):
         return self.db.fetch(query, params=None)
     
     def read_private_message(self):
-        query = f'SELECT hour, author, message_text, id_name FROM private_message'
+        query = f'SELECT hour, author, message, id_user FROM private_message'
         return self.db.fetch(query, params=None)
 
     def listen_vocal(self):
         query = f'SELECT hour, author, message_vocal, id_room FROM vocal_message'
         return self.db.fetch(query, params=None)
 
-    # def listen_vocal(self):
-    #     query = f'SELECT hour, author, message_vocal, id_room FROM vocal_message'
-    #     results = self.db.fetch(query, params=None)
-    #     vocal_messages = []
-    #     for vocal in results:
-    #         hour, author, message_vocal_json, id_room = vocal
-    #         message_vocal = json.loads(message_vocal_json)
-    #         vocal_messages.append((hour, author, message_vocal, id_room))
-    #     return vocal_messages
-
-
-
     def delete_message(self, id):
         query = f'DELETE FROM message WHERE id = %s'
         params = (id,)
         self.db.executeQuery(query, params)
-
-    # def show_room_data(self, room_type):
-    #     query = f'SELECT * FROM {room_type}'
-    #     return self.db.fetch(query, params=None)
 
     def show_room_data(self, room_type):
         query = f'SELECT * FROM {room_type}'
@@ -206,4 +190,3 @@ class Server(metaclass=SingletonMeta):
         finally:
             # Assurez-vous de fermer la connexion à la fin du traitement
             client_socket.close()
-
