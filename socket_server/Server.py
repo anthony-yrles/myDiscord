@@ -37,6 +37,7 @@ class Server(metaclass=SingletonMeta):
             'READ_LIST_ROOM_USER' : self.read_list_room_user,
             'CREATE_NEW_MESSAGE' : self.create_new_message,
             'CREATE_NEW_VOCAL_MESSAGE': self.create_new_vocal_message,
+            'CREATE_NEW_PRIVATE_MESSAGE' : self.create_new_private_message,
             'READ_MESSAGE' : self.read_message,
             'READ_PRIVATE_MESSAGE' : self.read_private_message,
             'LISTEN_VOCAL' : self.listen_vocal,
@@ -124,8 +125,12 @@ class Server(metaclass=SingletonMeta):
         params = (hour, author, message_text, id_room)
         self.db.executeQuery(query, params)
         self.send_to_all_clients(params)
-        # envoyer a tous les utilisateurs connectes dans le dictionnaire le message recu
-    
+
+    def create_new_private_message(self, hour, author, message, id_user):
+        query = 'INSERT INTO private_message (hour, author, message, id_user) VALUES (%s, %s, %s, %s)'
+        params = (hour, author, message, id_user)
+        self.db.executeQuery(query, params)
+ 
 
     def create_new_vocal_message(self, hour, author, message_vocal, id_room):
         # message_vocal_json = json.dumps(message_vocal)

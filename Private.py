@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 class Private():
     def __init__(self, client):
@@ -19,3 +20,8 @@ class Private():
         messages = json.loads(messages)
         name_ids = [message[3] for message in messages]
         return messages, name_ids
+    
+    def create_private_message(self, author, message, id_user):
+        hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        params = (hour, author, message, id_user)
+        self.client.send_data('CREATE_NEW_PRIVATE_MESSAGE', params)

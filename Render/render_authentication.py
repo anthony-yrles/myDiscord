@@ -343,14 +343,12 @@ user_list_button = []
 user_label_list = []
 
 def render_private_chat(user, event=None):
-    global room_labels, area_message, vocal_room_button_list, vocal_room_id_list
+    global room_labels, area_message
     print("Private Chat")
     private = Private(client)
-    type_room = 'private_text_room'
 
-
-    for enter_text in area_message:
-        enter_text.destroy_entry()
+    # for enter_text in area_message:
+    #     enter_text.destroy_entry()
 
     for label in room_labels:
         label.destroy()
@@ -358,6 +356,8 @@ def render_private_chat(user, event=None):
 
     background_vocal = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_vocal.draw()
+
+    # render_create_message(user)
 
     micro_button3 = Button(primus_canvas, 80, 535, './assets/micro_button3.png', None)
     micro_button3.bind('<Button-1>', lambda event: render_vocal_chat(user, event))
@@ -406,7 +406,7 @@ def render_private_send(user, id, gun_button3, private, event):
 
     text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white", relief=tk.FLAT)
     
-    gun_button3.bind('<Button-1>', lambda event=None, user=user, id_room=id: send_message(user, id_room, event))
+    gun_button3.bind('<Button-1>', lambda event=None, user=user, name_id=id: send_private_message(user, name_id, private, event))
 
     
     messages, name_ids = private.read_private_message()
@@ -425,3 +425,15 @@ def render_private_send(user, id, gun_button3, private, event):
 
     text_area.configure(state ='disabled') 
     text_area.pack(fill=tk.BOTH, expand=True)
+
+
+def send_private_message(user, name_id, private, event=None):
+    global message_entry
+    author = user.get_name()
+    if message_entry :
+        message_text_priv = message_entry[0][0].get_value()
+        try:
+            private.create_private_message(author, message_text_priv, name_id)
+            message_entry[0][0].set_value("")
+        except Exception as e:
+            print(f"Error sending message: {e}")
