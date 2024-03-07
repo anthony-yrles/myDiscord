@@ -7,12 +7,12 @@ class Text_room(Room):
         super().__init__(name, list_modo, list_admin, list_user)
         self.client = client
         
-    def read_all_mess(self):
-        self.client.send_data('READ_TABLE_MESSAGE','')
-        user_data_json = self.client.receive_data(1024)
-        user_data_list = json.loads(user_data_json)
-        for message in user_data_list:
-            print(message)
+    # def read_all_mess(self):
+    #     self.client.send_data('READ_TABLE_MESSAGE','')
+    #     user_data_json = self.client.receive_data(1024)
+    #     user_data_list = json.loads(user_data_json)
+    #     for message in user_data_list:
+    #         print(message)
 
     def notification(self):
         self.client.send_data('READ_LIST_ROOM_USER','')

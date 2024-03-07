@@ -2,10 +2,16 @@ from Room import Room
 from datetime import datetime
 from Text_room import Text_room
 import json
+import sounddevice as sd
+import os
+import time
+import re
+import numpy as np
+
 
 class User:
-    def __init__(self, client,name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
-        self.client = client
+    def __init__(self, client, name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
+        self.client = client 
         self.name = name
         self.surname = surname
         self.mail = mail
@@ -61,6 +67,12 @@ class User:
         self.client.send_data('CREATE_TEXT_ROOM', params)
         # self.add_room_to_list('text_room')
 
+    def create_vocals_rooms(self, name, admin_name):
+        params = (name, admin_name)
+        self.client.send_data('CREATE_VOCAL_ROOM', params)
+        # self.add_room_to_list('text_room')
+
+
     def modify_room(self, name, list_modo, list_admin, list_user):
         self.name = name
         self.list_modo = list_modo
@@ -69,13 +81,18 @@ class User:
 
 
     def read_message(self):
-        # print(f'1: {params}')
         self.client.send_data('READ_MESSAGE','')
-        messages = self.client.receive_data(1024)
-        print(f'2: {messages}')
-        return messages
+        messages = self.client.receive_data(1073741824)
+        messages = json.loads(messages)
+        room_ids = [message[3] for message in messages]
+        return messages, room_ids
+        
+        messages = self.client.receive_data(1073741824)
+        # print(f'2: {messages}')
+        messages = json.loads(messages)
+        room_ids = [message[3] for message in messages]
+        return messages, room_ids
 
-    
     def show_room_data(self, type_of_room, client):
         params = (type_of_room,)
         self.client.send_data('SHOW_ROOM_DATA', params)
@@ -99,21 +116,36 @@ class User:
         else:
             return False
 
-
-    # def delete_room(self, name, list_room):
-    #     for room in list_room:
-    #         if room.name == name:
-    #             list_room.remove(room)
-    #             return f"Room '{name}' deleted successfully."
-    #     return f"No room found with the name '{name}'."
-
-
     def create_message(self, author, message_text, id_room):
         hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(type(hour),"check le type mon pote")
         params = (hour, author, message_text, id_room)
         self.client.send_data('CREATE_NEW_MESSAGE', params)
 
-    # def read_message(self, message_text):
-    #     params = (message_text,)
-    #     self.client.send_data('READ_TABLE_MESSAGE', params=None)
+    def create_vocal_message(self, author, message_vocal, id_room):
+        hour = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        message_vocal_str = json.dumps(message_vocal)
+        params = (hour, author, message_vocal_str, id_room)
+        self.client.send_data('CREATE_NEW_VOCAL_MESSAGE', params)
+
+    def listen_message(self, i):
+        self.client.send_data('LISTEN_VOCAL', '')
+        messages = self.client.receive_data(107374182)
+        messages = json.loads(messages)
+        message = messages[i][2]
+        message_list = json.loads(message)
+        message_array = np.array(message_list, dtype=np.float32)
+        samplerate = 44100
+        sd.play(message_array, samplerate)
+        sd.wait()
+        time.sleep(2)
+
+    def listen_message_room_ids(self):
+        self.client.send_data('LISTEN_VOCAL', '')
+        messages = self.client.receive_data(107374182)
+        time.sleep(2)
+        messages = json.loads(messages)
+        room_ids = [message[3] for message in messages]
+        return messages, room_ids
+        
+
+

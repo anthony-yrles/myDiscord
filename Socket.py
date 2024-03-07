@@ -46,10 +46,15 @@ class Socket:
         self.socks.send(data.encode())
 
     def receive(self, buffer_size):
-        test = self.socks.recv(buffer_size).decode()
-        if len(test) < 5:
-            test = self.socks.recv(buffer_size).decode()
-        return test
+        data = b""
+        while True:
+            chunk = self.socks.recv(buffer_size)
+            if not chunk:
+                break
+            data += chunk
+            if len(chunk) < buffer_size:
+                break
+        return data.decode()
 
     def close(self):
         self.socks.close()
