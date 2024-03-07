@@ -65,30 +65,14 @@ class User:
     def create_room(self, name, admin_name):
         params = (name, admin_name)
         self.client.send_data('CREATE_TEXT_ROOM', params)
-        # self.add_room_to_list('text_room')
 
     def create_vocals_rooms(self, name, admin_name):
         params = (name, admin_name)
         self.client.send_data('CREATE_VOCAL_ROOM', params)
-        # self.add_room_to_list('text_room')
-
-
-    def modify_room(self, name, list_modo, list_admin, list_user):
-        self.name = name
-        self.list_modo = list_modo
-        self.list_admin = list_admin
-        self.list_user = list_user
-
 
     def read_message(self):
         self.client.send_data('READ_MESSAGE','')
         messages = self.client.receive_data(1073741824)
-        messages = json.loads(messages)
-        room_ids = [message[3] for message in messages]
-        return messages, room_ids
-        
-        messages = self.client.receive_data(1073741824)
-        # print(f'2: {messages}')
         messages = json.loads(messages)
         room_ids = [message[3] for message in messages]
         return messages, room_ids

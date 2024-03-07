@@ -28,20 +28,3 @@ class Room:
         return self.list_user
     def set_list_user(self, list_user):
         self.list_user = list_user
-
-    # #research a room
-    # def research_room(self, name):
-    #     if self.name == name:
-    #         return self
-    #     else:
-    #         return f'No room found with the name {name}'
-
-    # #delete a room
-    # def print_details(self):
-    #     print(f"Room: {self.name}")
-    #     print("Moderators:", ", ".join(self.list_modo))
-    #     print("Admins:", ", ".join(self.list_admin))
-    #     print("Users:", ", ".join(self.list_user))
-
-
-

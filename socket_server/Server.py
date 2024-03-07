@@ -32,12 +32,13 @@ class Server(metaclass=SingletonMeta):
         self.server_socket.start(address, port, backlog)
         self.query_dictionnary = {
             'READ_TABLE_USER' : self.read_table_user,
+            'READ_LIST_USER' : self.list_user,
             'CREATE_USER' : self.create_user,
-            'READ_TABLE_MESSAGE' : self.read_table_message,
             'READ_LIST_ROOM_USER' : self.read_list_room_user,
             'CREATE_NEW_MESSAGE' : self.create_new_message,
             'CREATE_NEW_VOCAL_MESSAGE': self.create_new_vocal_message,
             'READ_MESSAGE' : self.read_message,
+            'READ_PRIVATE_MESSAGE' : self.read_private_message,
             'LISTEN_VOCAL' : self.listen_vocal,
             'DELETE_MESSAGE' : self.delete_message,
             'MODIFY_MESSAGE' : self.modify_message,
@@ -87,6 +88,10 @@ class Server(metaclass=SingletonMeta):
         params = (mail,)
         return self.db.fetch(query, params)
     
+    def list_user(self):
+        query = f'SELECT id, name FROM user'
+        return self.db.fetch(query, params=None)
+    
     def create_user(self, name, surname, mail, password, list_room_private = '{}', list_room_group = '{"Bienvenue"}', list_created_room = '{}'):
         password_bytes = password.encode('utf-8')
         hash_password = hashlib.sha256()
@@ -105,10 +110,6 @@ class Server(metaclass=SingletonMeta):
         query = f'INSERT INTO vocal_room (name, list_admin, list_modo,  list_user) VALUES (%s, %s, %s, %s)'
         params = name, list_admin, list_modo, list_user
         self.db.executeQuery(query, params)
-
-    def read_table_message(self):
-        query = f'SELECT * FROM message'
-        return self.db.fetch(query, params=None)
 
     def read_list_room_user(self):
         query = f'SELECT list_user FROM text_room'
@@ -135,22 +136,13 @@ class Server(metaclass=SingletonMeta):
             print("Query executed")
         except Exception as e:
             print("Error executing query:", e)
-    # def create_new_vocal_message(self, hour, author, message_vocal, id_room):
-    #     print('error')
-    #     query = 'INSERT INTO vocal_message (hour, author, message_vocal, id_room) VALUES (%s, %s, %s, %s)'
-    #     print('error1')
-    #     params = (hour, author, message_vocal, id_room)
-    #     print('error2')
-    #     try:
-    #         print('error3')
-    #         self.db.executeQuery(query, params)
-    #         print("Query executed")
-    #     except Exception as e:
-    #         print("Error executing query:", e)
-
-
+            
     def read_message(self):
         query = f'SELECT hour, author, message_text, id_room FROM message'
+        return self.db.fetch(query, params=None)
+    
+    def read_private_message(self):
+        query = f'SELECT hour, author, message_text, id_name FROM private_message'
         return self.db.fetch(query, params=None)
 
     def listen_vocal(self):

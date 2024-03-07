@@ -1,4 +1,3 @@
-import json
 import requests
 import hashlib
 from User import User
@@ -49,34 +48,3 @@ class Authentication:
         data = {'method': ('CREATE_USER'), 'params': (name, surname, mail, password)}
         user_data = requests.post('http://127.0.0.1:8888', json=data)
         user_data.raise_for_status()
-
-
-    # def logout(self):
-    #     return "Logout successful"
-        
-    # def login(self):
-    #     if self.authenticate():
-    #         return "Login successful"
-    #     else:
-    #         return "Login failed"
-    
-    
-    # def creation_account(self, client):
-    #     client.send_data([])
-    #     return "Account created"
-    
-    # def test_name(self):
-    #     if self.username == "admin":
-    #         return "Username already taken"
-    #     else:
-    #         return "Username available"
-        
-    # def test_password(self):
-    #     if self.password == "admin":
-    #         return "Password already taken"
-    #     else:
-    #         return "Password available"
-        
-    # def change_password(self, new_password):
-    #     self.password = new_password
-    #     return "Password changed"
