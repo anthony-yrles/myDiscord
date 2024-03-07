@@ -9,7 +9,6 @@ from socket_server.Singleton_Meta import SingletonMeta
 from socket_server.Db import Db
 import json
 import threading
-import http.server
 import hashlib
 from http.server import ThreadingHTTPServer
 from .HttpServer import HttpServer
@@ -193,5 +192,4 @@ class Server(metaclass=SingletonMeta):
         except Exception as e:
             print(f"Error handling client request: {e}")
         finally:
-            # Assurez-vous de fermer la connexion à la fin du traitement
             client_socket.close()
