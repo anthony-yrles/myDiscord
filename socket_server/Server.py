@@ -1,3 +1,9 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+# The Server class simplifies interactions with the client on the server side.
+# It takes a Socket_server object as an argument and uses its methods,
+# as well as the server address and a list of clients.
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 from socket_server.Socket_server import Socket_server
 from socket_server.Singleton_Meta import SingletonMeta
 from socket_server.Db import Db
@@ -9,6 +15,14 @@ from http.server import ThreadingHTTPServer
 from .HttpServer import HttpServer
 
 class Server(metaclass=SingletonMeta):
+
+    """
+    Methods used:
+
+    accept_client: Allows accepting connections to the server
+
+    close: Closes the socket
+    """
 
     client_connected = {}
 
@@ -52,6 +66,7 @@ class Server(metaclass=SingletonMeta):
             client_socket, client_address = self.server_socket.accept_connection()
             self.client_connected[client_address] = client_socket
             print(f"Client {self.client_connected} connected")
+            # Créer un thread pour gérer la requête du client
             print("Starting client thread...")
             client_thread = threading.Thread(target=self.handle_client_request, args=(client_socket,))
             client_thread.start()
@@ -62,7 +77,9 @@ class Server(metaclass=SingletonMeta):
 
     def send_data(self, client_socket, data):
         try:
+            # Convertir les données en JSON
             json_data = json.dumps(data)
+            # Envoyer les données encodées
             client_socket.send(json_data.encode())
         except Exception as e:
             print(f"Error sending data: {e}")
@@ -116,6 +133,7 @@ class Server(metaclass=SingletonMeta):
  
 
     def create_new_vocal_message(self, hour, author, message_vocal, id_room):
+        # message_vocal_json = json.dumps(message_vocal)
         query = 'INSERT INTO vocal_message (hour, author, message_vocal, id_room) VALUES (%s, %s, %s, %s)'
         params = (hour, author, message_vocal, id_room)
         try:
@@ -175,4 +193,5 @@ class Server(metaclass=SingletonMeta):
         except Exception as e:
             print(f"Error handling client request: {e}")
         finally:
+            # Assurez-vous de fermer la connexion à la fin du traitement
             client_socket.close()
