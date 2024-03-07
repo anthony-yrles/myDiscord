@@ -9,11 +9,6 @@ from Authentication import Authentication
 from Private import Private
 from socket_client.Client import Client
 import threading
-import time
-import sounddevice as sd
-import tempfile
-from scipy.io.wavfile import write
-import numpy as np
 from Vocal_message import Vocal_Recorder
 
 screen = tk.Tk()
@@ -42,12 +37,8 @@ def read_messages_loop():
         data = client.receive_data(1024)
         if data :
             received_messages.append(data)
-            # refresh_messages(text_area)
 
-    # Signaler au thread d'interface graphique de mettre à jour les messages
     update_event.set()
-
-
 
 def render_main_menu():
 
@@ -119,9 +110,6 @@ def render_log_in(event=None):
 
     new_here_button = Button(primus_canvas, 269, 430, './assets/new_here_button.png', None)
     new_here_button.bind('<Button-1>', render_sign_in)
-
-    pwd_lost_button = Button(primus_canvas, 430, 430, './assets/pwd_lost_button.png', None)
-    # pwd_lost_button.bind('<Button-1>', render_sign_in)
 
     screen.mainloop()
     primus_canvas.update()
@@ -313,7 +301,6 @@ def render_vocal_send(user, id_room, gun_button, event=None):
     text_area = scrolledtext.ScrolledText(second_canvas, width=50, height=15, font=("Arial", 15), bg="black", fg="white",relief=tk.FLAT) 
 
     messages, room_ids = user.listen_message_room_ids()
-    # message_list = user.listen_message(i)
     
     dates = []
     authors = []
@@ -344,11 +331,7 @@ user_label_list = []
 
 def render_private_chat(user, event=None):
     global room_labels, area_message
-    print("Private Chat")
     private = Private(client)
-
-    # for enter_text in area_message:
-    #     enter_text.destroy_entry()
 
     for label in room_labels:
         label.destroy()
@@ -356,8 +339,6 @@ def render_private_chat(user, event=None):
 
     background_vocal = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_vocal.draw()
-
-    # render_create_message(user)
 
     micro_button3 = Button(primus_canvas, 80, 535, './assets/micro_button3.png', None)
     micro_button3.bind('<Button-1>', lambda event: render_vocal_chat(user, event))
@@ -403,7 +384,6 @@ def render_private_send(user, id, gun_button3, private, event):
         for widget in second_canvas.winfo_children():
             widget.destroy()
         
-
     text_area = scrolledtext.ScrolledText(second_canvas, width=56, height=15, font=("Arial", 15), bg="black", fg="white", relief=tk.FLAT)
     
     gun_button3.bind('<Button-1>', lambda event=None, user=user, name_id=id: send_private_message(user, name_id, private, event))
