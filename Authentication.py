@@ -22,7 +22,6 @@ class Authentication:
             password = hashlib.sha256(password.encode()).hexdigest()
             print(password)
 
-            # Assurez-vous que les données attendues sont présentes dans la réponse
             if mail == response_data[0][3] and password == response_data[0][4]:
                 user = User(self.client, response_data[0][1], response_data[0][2], response_data[0][3], response_data[0][4], response_data[0][5], response_data[0][6], response_data[0][7])
                 return True, user

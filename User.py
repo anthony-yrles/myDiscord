@@ -8,7 +8,6 @@ import time
 import re
 import numpy as np
 
-
 class User:
     def __init__(self, client, name, surname, mail, password, list_room_private = {}, list_room_group = {}, list_created_room = {}):
         self.client = client 

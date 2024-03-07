@@ -47,6 +47,7 @@ def render_main_menu():
         enter_text.destroy_entry()
     for label in room_labels:
         label.destroy()
+        
 
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_menu_2.png')
     background_image.draw()
@@ -192,6 +193,7 @@ def render_chat(user, event=None):
     for label in room_labels:
         label.destroy()
 
+
     background_image = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_image.draw()
  
@@ -253,6 +255,9 @@ def render_vocal_chat(user, event=None):
 
     delete_button2 = Button(primus_canvas, 750, 40, './assets/delete_button2.png', None)
     delete_button2.bind('<Button-1>', lambda event: render_main_menu())
+    if delete_button2.bind('<Button-1>', lambda event: render_main_menu()):
+        for label in room_labels:
+            label.destroy()
 
     gun_button2 = Button(primus_canvas, 820, 500, './assets/gun_button2.png', None)
 
@@ -322,7 +327,6 @@ def render_private_chat(user, event=None):
 
     for label in room_labels:
         label.destroy()
-
 
     background_vocal = Image(primus_canvas, 0, 0, './assets/bcg_chat.png')
     background_vocal.draw()
