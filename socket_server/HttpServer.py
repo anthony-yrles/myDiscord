@@ -15,10 +15,8 @@ class HttpServer(http.server.BaseHTTPRequestHandler):
         from socket_server.Server import Server
 
         try:
-            # Convertir les données JSON
             data = json.loads(post_data.decode('utf-8'))
 
-            # Utiliser les données comme nécessaire
             method = data.get('method')
             print(method)
             params = data.get('params')
